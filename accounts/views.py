@@ -2,7 +2,7 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from .models import Passenger
-from utils.errors import ERROR_INVALID_JSON, ERROR_INVALID_REQUEST, ERROR_MISSING_FIELD, ERROR_USERNAME_EXISTS
+from utils.errors import ERROR_INVALID_JSON, ERROR_INVALID_REQUEST_METHOD, ERROR_MISSING_FIELD, ERROR_USERNAME_EXISTS
 
 
 @csrf_exempt
@@ -27,4 +27,4 @@ def signup(request):
         except json.JSONDecodeError:
             return JsonResponse({'error': ERROR_INVALID_JSON}, status=400)
     else:
-        return JsonResponse({'error': ERROR_INVALID_REQUEST}, status=405)
+        return JsonResponse({'error': ERROR_INVALID_REQUEST_METHOD}, status=405)

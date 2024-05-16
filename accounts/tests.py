@@ -2,7 +2,7 @@ import json
 from django.test import TestCase, Client
 from django.urls import reverse
 from .models import Passenger
-from utils.errors import ERROR_INVALID_JSON, ERROR_INVALID_REQUEST, ERROR_MISSING_FIELD, ERROR_USERNAME_EXISTS
+from utils.errors import ERROR_INVALID_JSON, ERROR_INVALID_REQUEST_METHOD, ERROR_MISSING_FIELD, ERROR_USERNAME_EXISTS
 
 
 class SignupViewTests(TestCase):
@@ -64,4 +64,5 @@ class SignupViewTests(TestCase):
     def test_invalid_request_method(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 405)
-        self.assertEqual(response.json(), {'error': ERROR_INVALID_REQUEST})
+        self.assertEqual(response.json(), {
+                         'error': ERROR_INVALID_REQUEST_METHOD})
