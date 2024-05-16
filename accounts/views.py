@@ -2,6 +2,7 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from .models import Passenger
+from utils.errors import ERROR_INVALID_JSON, ERROR_INVALID_REQUEST, ERROR_MISSING_FIELD, ERROR_USERNAME_EXISTS
 
 
 @csrf_exempt
@@ -13,10 +14,10 @@ def signup(request):
             password = data.get('password')
 
             if not username or not password:
-                return JsonResponse({'error': 'Missing required fields'}, status=400)
+                return JsonResponse({'error': ERROR_MISSING_FIELD}, status=400)
 
             if Passenger.objects.filter(username=username).exists():
-                return JsonResponse({'error': 'Username already exists'}, status=400)
+                return JsonResponse({'error': ERROR_USERNAME_EXISTS}, status=400)
 
             passenger = Passenger.objects.create_user(
                 username=username, password=password)
@@ -24,6 +25,6 @@ def signup(request):
 
             return JsonResponse({'message': 'User created successfully'}, status=201)
         except json.JSONDecodeError:
-            return JsonResponse({'error': 'Invalid JSON'}, status=400)
+            return JsonResponse({'error': ERROR_INVALID_JSON}, status=400)
     else:
-        return JsonResponse({'error': 'Invalid request method'}, status=405)
+        return JsonResponse({'error': ERROR_INVALID_REQUEST}, status=405)

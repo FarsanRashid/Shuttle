@@ -2,6 +2,7 @@ import json
 from django.test import TestCase, Client
 from django.urls import reverse
 from .models import Passenger
+from utils.errors import ERROR_INVALID_JSON, ERROR_INVALID_REQUEST, ERROR_MISSING_FIELD, ERROR_USERNAME_EXISTS
 
 
 class SignupViewTests(TestCase):
@@ -30,7 +31,7 @@ class SignupViewTests(TestCase):
         response = self.client.post(self.url, json.dumps(
             data), content_type='application/json')
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), {'error': 'Missing required fields'})
+        self.assertEqual(response.json(), {'error': ERROR_MISSING_FIELD})
 
         data = {
             'password': 'testpassword'
@@ -39,7 +40,7 @@ class SignupViewTests(TestCase):
         response = self.client.post(self.url, json.dumps(
             data), content_type='application/json')
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), {'error': 'Missing required fields'})
+        self.assertEqual(response.json(), {'error': ERROR_MISSING_FIELD})
 
     def test_signup_existing_username(self):
         Passenger.objects.create_user(
@@ -51,16 +52,16 @@ class SignupViewTests(TestCase):
         response = self.client.post(self.url, json.dumps(
             data), content_type='application/json')
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), {'error': 'Username already exists'})
+        self.assertEqual(response.json(), {'error': ERROR_USERNAME_EXISTS})
 
     def test_signup_invalid_json(self):
         data = 'invalid json'
         response = self.client.post(
             self.url, data, content_type='application/json')
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), {'error': 'Invalid JSON'})
+        self.assertEqual(response.json(), {'error': ERROR_INVALID_JSON})
 
     def test_invalid_request_method(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 405)
-        self.assertEqual(response.json(), {'error': 'Invalid request method'})
+        self.assertEqual(response.json(), {'error': ERROR_INVALID_REQUEST})
