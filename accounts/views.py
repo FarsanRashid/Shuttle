@@ -2,7 +2,7 @@ import json
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 from .models import Passenger
-from utils.errors import ERROR_INVALID_JSON, ERROR_INVALID_REQUEST_METHOD, ERROR_MISSING_FIELD, ERROR_USERNAME_EXISTS
+from utils.errors import ERROR, ERROR_INVALID_JSON, ERROR_INVALID_REQUEST_METHOD, ERROR_MISSING_FIELD, ERROR_USERNAME_EXISTS
 
 
 @csrf_exempt
@@ -14,10 +14,10 @@ def signup(request):
             password = data.get('password')
 
             if not username or not password:
-                return JsonResponse({'error': ERROR_MISSING_FIELD}, status=400)
+                return JsonResponse({ERROR: ERROR_MISSING_FIELD}, status=400)
 
             if Passenger.objects.filter(username=username).exists():
-                return JsonResponse({'error': ERROR_USERNAME_EXISTS}, status=400)
+                return JsonResponse({ERROR: ERROR_USERNAME_EXISTS}, status=400)
 
             passenger = Passenger.objects.create_user(
                 username=username, password=password)
@@ -25,6 +25,6 @@ def signup(request):
 
             return JsonResponse({'message': 'User created successfully'}, status=201)
         except json.JSONDecodeError:
-            return JsonResponse({'error': ERROR_INVALID_JSON}, status=400)
+            return JsonResponse({ERROR: ERROR_INVALID_JSON}, status=400)
     else:
-        return JsonResponse({'error': ERROR_INVALID_REQUEST_METHOD}, status=405)
+        return JsonResponse({ERROR: ERROR_INVALID_REQUEST_METHOD}, status=405)
