@@ -12,7 +12,7 @@ from utils.response_attributes import (
 
 
 @csrf_exempt
-def signup(request):
+def initiate_signup(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)

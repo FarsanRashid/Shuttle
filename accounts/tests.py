@@ -15,7 +15,7 @@ class SignupViewTests(TestCase):
 
     def setUp(self):
         self.client = Client()
-        self.url = reverse('signup')
+        self.url = reverse('initiate_signup')
 
     def test_successful_signup(self):
         data = {
