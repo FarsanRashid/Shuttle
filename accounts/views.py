@@ -1,5 +1,4 @@
 import json
-import os
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -25,7 +24,7 @@ def initiate_signup(request):
             password = data.get('password')
 
             services.initate_signup(username, password, redis.Redis(
-                host=REDIS_HOST, port=REDIS_PORT))
+                host=REDIS_HOST, port=REDIS_PORT, decode_responses=True))
 
             return JsonResponse(SUCCESS_SIGNUP_INITIATE, status=201)
 
