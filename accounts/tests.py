@@ -1,15 +1,17 @@
 import json
-from django.test import TestCase, Client
+
+from django.test import Client, TestCase
 from django.urls import reverse
 import jwt
 import redis
-from accounts.views import PendingOtpValidation
+
+from service_layer.services import PendingOtpValidation
 from utils.response_attributes import (
-    SUCCESS_SIGNUP_INITIATE,
-    ERROR_MISSING_FIELD,
-    ERROR_USERNAME_EXISTS,
     ERROR_INVALID_JSON,
     ERROR_INVALID_REQUEST_METHOD,
+    ERROR_MISSING_FIELD,
+    ERROR_USERNAME_EXISTS,
+    SUCCESS_SIGNUP_INITIATE,
 )
 
 
