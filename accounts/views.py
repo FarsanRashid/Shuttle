@@ -1,10 +1,12 @@
 import json
+import os
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import redis
 
 from service_layer import services
+from utils.config import REDIS_HOST, REDIS_PORT
 from utils.response_attributes import (
     ERROR_INVALID_JSON,
     ERROR_INVALID_REQUEST_METHOD,
@@ -23,7 +25,7 @@ def initiate_signup(request):
             password = data.get('password')
 
             services.initate_signup(username, password, redis.Redis(
-                host='localhost', port=6379, db=0))
+                host=REDIS_HOST, port=REDIS_PORT))
 
             return JsonResponse(SUCCESS_SIGNUP_INITIATE, status=201)
 
