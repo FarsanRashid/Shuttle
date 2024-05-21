@@ -18,5 +18,5 @@ ERROR_INVALID_REQUEST_METHOD = Response(FAILURE,
 
 
 SUCCESS_CODE = "000"
-SUCCESS_SIGNUP = Response(
+SUCCESS_SIGNUP_INITIATE = Response(
     SUCCESS, SUCCESS_CODE, "User created successfully")._asdict()

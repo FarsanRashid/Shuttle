@@ -1,9 +1,11 @@
 import json
 from django.test import TestCase, Client
 from django.urls import reverse
-from .models import Passenger
+import jwt
+import redis
+from accounts.views import PendingOtpValidation
 from utils.response_attributes import (
-    SUCCESS_SIGNUP,
+    SUCCESS_SIGNUP_INITIATE,
     ERROR_MISSING_FIELD,
     ERROR_USERNAME_EXISTS,
     ERROR_INVALID_JSON,
@@ -16,8 +18,12 @@ class SignupViewTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.url = reverse('initiate_signup')
+        self.redis_con = redis.Redis(host='localhost', port=6379, db=0)
 
-    def test_successful_signup(self):
+    def tearDown(self) -> None:
+        self.redis_con.flushdb()
+
+    def test_successful_signup_initiation(self):
         data = {
             'username': 'testuser',
             'password': 'testpassword'
@@ -25,10 +31,13 @@ class SignupViewTests(TestCase):
         response = self.client.post(self.url, json.dumps(
             data), content_type='application/json')
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.json(), SUCCESS_SIGNUP)
-        self.assertTrue(Passenger.objects.filter(username='testuser').exists())
+        self.assertEqual(response.json(), SUCCESS_SIGNUP_INITIATE)
 
-    def test_signup_missing_fields(self):
+        jwt_token = jwt.encode(
+            {'username': data.get('username'), }, 'secret', algorithm='HS256')
+        self.assertEqual(self.redis_con.exists(jwt_token), 1)
+
+    def test_initiate_signup_with_missing_fields(self):
         data = {
             'username': 'testuser'
             # Missing password
@@ -47,19 +56,25 @@ class SignupViewTests(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), ERROR_MISSING_FIELD)
 
-    def test_signup_existing_username(self):
-        Passenger.objects.create_user(
-            username='testuser', password='testpassword')
+    def test_initiate_signup_for_existing_username(self):
         data = {
             'username': 'testuser',
             'password': 'newpassword'
         }
+        jwt_token = jwt.encode(
+            {'username': data.get('username'), }, 'secret', algorithm='HS256')
+
+        pending_otp_validation = PendingOtpValidation(
+            data.get('username'), 'testpassword', otp=1234)
+        self.redis_con.set(jwt_token, json.dumps(
+            pending_otp_validation._asdict()))
+
         response = self.client.post(self.url, json.dumps(
             data), content_type='application/json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(),  ERROR_USERNAME_EXISTS)
 
-    def test_signup_invalid_json(self):
+    def test_initiate_signup_with_invalid_json(self):
         data = 'invalid json'
         response = self.client.post(
             self.url, data, content_type='application/json')
