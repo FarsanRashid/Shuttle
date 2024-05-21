@@ -25,7 +25,7 @@ def initate_signup(username, password, cache: redis.Redis):
         raise InvalidPayload
 
     jwt_token = jwt.encode(
-        {'username': username, }, 'secret', algorithm='HS256')
+        {'username': username, }, settings.SECRET_KEY, algorithm='HS256')
 
     user = cache.get(jwt_token)
 

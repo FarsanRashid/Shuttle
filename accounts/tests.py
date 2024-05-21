@@ -1,5 +1,6 @@
 import json
 
+from django.conf import settings
 from django.test import Client, TestCase
 from django.urls import reverse
 import jwt
@@ -36,7 +37,7 @@ class SignupViewTests(TestCase):
         self.assertEqual(response.json(), SUCCESS_SIGNUP_INITIATE)
 
         jwt_token = jwt.encode(
-            {'username': data.get('username'), }, 'secret', algorithm='HS256')
+            {'username': data.get('username'), }, settings.SECRET_KEY, algorithm='HS256')
         self.assertEqual(self.redis_con.exists(jwt_token), 1)
 
     def test_initiate_signup_with_missing_fields(self):
@@ -64,7 +65,7 @@ class SignupViewTests(TestCase):
             'password': 'newpassword'
         }
         jwt_token = jwt.encode(
-            {'username': data.get('username'), }, 'secret', algorithm='HS256')
+            {'username': data.get('username'), }, settings.SECRET_KEY, algorithm='HS256')
 
         pending_otp_validation = PendingOtpValidation(
             data.get('username'), 'testpassword', otp=1234)
