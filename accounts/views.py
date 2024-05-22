@@ -10,8 +10,10 @@ from utils.response_attributes import (
     ERROR_INVALID_JSON,
     ERROR_INVALID_REQUEST_METHOD,
     ERROR_MISSING_FIELD,
+    ERROR_SERVER_EXCEPTION,
     ERROR_USERNAME_EXISTS,
     SUCCESS_SIGNUP_INITIATE,
+    TOKEN,
 )
 
 
@@ -23,9 +25,12 @@ def initiate_signup(request):
             username = data.get('username')
             password = data.get('password')
 
-            services.initate_signup(username, password, redis.Redis(
-                host=REDIS_HOST, port=REDIS_PORT, decode_responses=True))
+            jwt_token = services.initate_signup(username, password,
+                                                redis.Redis(
+                                                    host=REDIS_HOST, port=REDIS_PORT,
+                                                    decode_responses=True))
 
+            SUCCESS_SIGNUP_INITIATE[TOKEN] = jwt_token
             return JsonResponse(SUCCESS_SIGNUP_INITIATE, status=201)
 
         except services.InvalidPayload:
@@ -34,5 +39,7 @@ def initiate_signup(request):
             return JsonResponse(ERROR_USERNAME_EXISTS, status=400)
         except json.JSONDecodeError:
             return JsonResponse(ERROR_INVALID_JSON, status=400)
+        except Exception:
+            return JsonResponse(ERROR_SERVER_EXCEPTION, status=500)
     else:
         return JsonResponse(ERROR_INVALID_REQUEST_METHOD, status=405)

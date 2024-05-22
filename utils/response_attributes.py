@@ -16,7 +16,12 @@ ERROR_INVALID_JSON = Response(FAILURE,
 ERROR_INVALID_REQUEST_METHOD = Response(FAILURE,
                                         "004", "Invalid request method")._asdict()
 
+ERROR_SERVER_EXCEPTION = Response(
+    FAILURE, "005", "Server Exception")._asdict()
+
 
 SUCCESS_CODE = "000"
 SUCCESS_SIGNUP_INITIATE = Response(
-    SUCCESS, SUCCESS_CODE, "User created successfully")._asdict()
+    SUCCESS, SUCCESS_CODE, "Signup initialization successful")._asdict()
+
+TOKEN = "token"
