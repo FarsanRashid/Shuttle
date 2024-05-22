@@ -42,7 +42,7 @@ class SignupViewTests(TestCase):
         self.assertEqual(response.json(), success_signup_initiate)
 
         jwt_token = jwt.encode(
-            {'username': self.data.get('username'), }, settings.SECRET_KEY, algorithm='HS256')
+            {'username': self.data.get('username'), }, settings.SECRET_KEY)
         self.assertEqual(self.redis_con.exists(jwt_token), 1)
 
     def test_initiate_signup_with_missing_fields(self):
@@ -76,7 +76,7 @@ class SignupViewTests(TestCase):
 
     def test_initiate_signup_for_existing_username(self):
         jwt_token = jwt.encode(
-            {'username': self.data.get('username')}, settings.SECRET_KEY, algorithm='HS256')
+            {'username': self.data.get('username')}, settings.SECRET_KEY)
 
         pending_otp_validation = PendingOtpValidation(
             self.data.get('username'), 'testpassword', otp=1234)

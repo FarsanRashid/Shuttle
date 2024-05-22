@@ -30,7 +30,7 @@ def initate_signup(username, password, country_code, contact_number, cache: redi
         raise UserNameNotUnique
 
     jwt_token = jwt.encode(
-        {'username': username, }, settings.SECRET_KEY, algorithm='HS256')
+        {'username': username, }, settings.SECRET_KEY)
 
     otp = random.randint(1000, 9999)
     pending_otp_validation = PendingOtpValidation(
