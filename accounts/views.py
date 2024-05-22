@@ -24,8 +24,13 @@ def initiate_signup(request):
             data = json.loads(request.body)
             username = data.get('username')
             password = data.get('password')
+            country_code = data.get('country_code')
+            contact_number = data.get('contact_number')
 
-            jwt_token = services.initate_signup(username, password,
+            jwt_token = services.initate_signup(username,
+                                                password,
+                                                country_code,
+                                                contact_number,
                                                 redis.Redis(
                                                     host=REDIS_HOST, port=REDIS_PORT,
                                                     decode_responses=True))

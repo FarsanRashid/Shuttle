@@ -3,4 +3,4 @@ class DianaHost():
         pass
 
     def send(self, otp: int):
-        print(f'Sending {otp} to Diana')
+        pass

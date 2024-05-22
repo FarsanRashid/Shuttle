@@ -22,8 +22,8 @@ PendingOtpValidation = namedtuple(
     'PendingOtpValidation', ['username', 'password', 'otp'])
 
 
-def initate_signup(username, password, cache: redis.Redis):
-    if not username or not password:
+def initate_signup(username, password, country_code, contact_number, cache: redis.Redis):
+    if not username or not password or not country_code or not contact_number:
         raise InvalidPayload
 
     if Passenger.objects.filter(username=username).exists():
