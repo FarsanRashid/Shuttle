@@ -7,6 +7,7 @@ import jwt
 import redis
 
 from accounts.models import Passenger
+from utils.attributes import OTP, PASSWORD, USERNAME
 from utils.otp_sender import DianaHost
 
 
@@ -19,7 +20,7 @@ class UserNameNotUnique(Exception):
 
 
 PendingOtpValidation = namedtuple(
-    'PendingOtpValidation', ['username', 'password', 'otp'])
+    'PendingOtpValidation', [USERNAME, PASSWORD, OTP])
 
 
 def initate_signup(username, password, country_code, contact_number, cache: redis.Redis):
@@ -30,7 +31,7 @@ def initate_signup(username, password, country_code, contact_number, cache: redi
         raise UserNameNotUnique
 
     jwt_token = jwt.encode(
-        {'username': username, }, settings.SECRET_KEY)
+        {USERNAME: username, }, settings.SECRET_KEY)
 
     otp = random.randint(1000, 9999)
     pending_otp_validation = PendingOtpValidation(

@@ -6,7 +6,11 @@ import redis
 
 from service_layer import services
 from utils.attributes import (
+    CONTACT_NUMBER,
+    COUNTRY_CODE,
+    PASSWORD,
     TOKEN,
+    USERNAME,
     error_invalid_json,
     error_invalid_request_method,
     error_missing_field,
@@ -22,10 +26,10 @@ def initiate_signup(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            username = data.get('username')
-            password = data.get('password')
-            country_code = data.get('country_code')
-            contact_number = data.get('contact_number')
+            username = data.get(USERNAME)
+            password = data.get(PASSWORD)
+            country_code = data.get(COUNTRY_CODE)
+            contact_number = data.get(CONTACT_NUMBER)
 
             jwt_token = services.initate_signup(username,
                                                 password,

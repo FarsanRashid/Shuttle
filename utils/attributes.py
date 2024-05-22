@@ -40,3 +40,7 @@ success_signup_initiate = Response(
 
 TOKEN = "token"
 OTP = "OTP"
+USERNAME = "username"
+PASSWORD = "password"
+COUNTRY_CODE = "country_code"
+CONTACT_NUMBER = "contact_number"
