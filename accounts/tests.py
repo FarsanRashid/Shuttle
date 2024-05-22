@@ -7,12 +7,12 @@ import jwt
 import redis
 
 from service_layer.services import PendingOtpValidation
-from utils.response_attributes import (
-    ERROR_INVALID_JSON,
-    ERROR_INVALID_REQUEST_METHOD,
-    ERROR_MISSING_FIELD,
-    ERROR_USERNAME_EXISTS,
-    SUCCESS_SIGNUP_INITIATE,
+from utils.attributes import (
+    error_invalid_json,
+    error_invalid_request_method,
+    error_missing_field,
+    error_username_exists,
+    success_signup_initiate,
 )
 
 
@@ -34,7 +34,7 @@ class SignupViewTests(TestCase):
         response = self.client.post(self.url, json.dumps(
             data), content_type='application/json')
         self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.json(), SUCCESS_SIGNUP_INITIATE)
+        self.assertEqual(response.json(), success_signup_initiate)
 
         jwt_token = jwt.encode(
             {'username': data.get('username'), }, settings.SECRET_KEY, algorithm='HS256')
@@ -48,7 +48,7 @@ class SignupViewTests(TestCase):
         response = self.client.post(self.url, json.dumps(
             data), content_type='application/json')
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), ERROR_MISSING_FIELD)
+        self.assertEqual(response.json(), error_missing_field)
 
         data = {
             'password': 'testpassword'
@@ -57,7 +57,7 @@ class SignupViewTests(TestCase):
         response = self.client.post(self.url, json.dumps(
             data), content_type='application/json')
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), ERROR_MISSING_FIELD)
+        self.assertEqual(response.json(), error_missing_field)
 
     def test_initiate_signup_for_existing_username(self):
         data = {
@@ -75,17 +75,17 @@ class SignupViewTests(TestCase):
         response = self.client.post(self.url, json.dumps(
             data), content_type='application/json')
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(),  ERROR_USERNAME_EXISTS)
+        self.assertEqual(response.json(),  error_username_exists)
 
     def test_initiate_signup_with_invalid_json(self):
         data = 'invalid json'
         response = self.client.post(
             self.url, data, content_type='application/json')
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(),  ERROR_INVALID_JSON)
+        self.assertEqual(response.json(),  error_invalid_json)
 
     def test_invalid_request_method(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 405)
         self.assertEqual(response.json(),
-                         ERROR_INVALID_REQUEST_METHOD)
+                         error_invalid_request_method)

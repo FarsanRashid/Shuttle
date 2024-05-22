@@ -5,16 +5,16 @@ from django.views.decorators.csrf import csrf_exempt
 import redis
 
 from service_layer import services
-from utils.config import REDIS_HOST, REDIS_PORT
-from utils.response_attributes import (
-    ERROR_INVALID_JSON,
-    ERROR_INVALID_REQUEST_METHOD,
-    ERROR_MISSING_FIELD,
-    ERROR_SERVER_EXCEPTION,
-    ERROR_USERNAME_EXISTS,
-    SUCCESS_SIGNUP_INITIATE,
+from utils.attributes import (
     TOKEN,
+    error_invalid_json,
+    error_invalid_request_method,
+    error_missing_field,
+    error_server_exception,
+    error_username_exists,
+    success_signup_initiate,
 )
+from utils.config import REDIS_HOST, REDIS_PORT
 
 
 @csrf_exempt
@@ -30,16 +30,16 @@ def initiate_signup(request):
                                                     host=REDIS_HOST, port=REDIS_PORT,
                                                     decode_responses=True))
 
-            SUCCESS_SIGNUP_INITIATE[TOKEN] = jwt_token
-            return JsonResponse(SUCCESS_SIGNUP_INITIATE, status=201)
+            success_signup_initiate[TOKEN] = jwt_token
+            return JsonResponse(success_signup_initiate, status=201)
 
         except services.InvalidPayload:
-            return JsonResponse(ERROR_MISSING_FIELD, status=400)
+            return JsonResponse(error_missing_field, status=400)
         except services.UserNameNotUnique:
-            return JsonResponse(ERROR_USERNAME_EXISTS, status=400)
+            return JsonResponse(error_username_exists, status=400)
         except json.JSONDecodeError:
-            return JsonResponse(ERROR_INVALID_JSON, status=400)
+            return JsonResponse(error_invalid_json, status=400)
         except Exception:
-            return JsonResponse(ERROR_SERVER_EXCEPTION, status=500)
+            return JsonResponse(error_server_exception, status=500)
     else:
-        return JsonResponse(ERROR_INVALID_REQUEST_METHOD, status=405)
+        return JsonResponse(error_invalid_request_method, status=405)
