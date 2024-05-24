@@ -6,12 +6,9 @@ from django.urls import reverse
 import jwt
 import redis
 
-from utils.config import REDIS_HOST, REDIS_PORT
-
-from service_layer.services import PendingOtpValidation
 from utils.attributes import (
     CONTACT_NUMBER,
-    COUNTRY_CODE,
+    COUNTRY_DIAL_CODE,
     PASSWORD,
     USERNAME,
     error_invalid_json,
@@ -20,6 +17,7 @@ from utils.attributes import (
     error_username_exists,
     success_signup_initiate,
 )
+from utils.config import REDIS_HOST, REDIS_PORT
 
 
 class SignupViewTests(TestCase):
@@ -32,7 +30,7 @@ class SignupViewTests(TestCase):
         self.data = {
             USERNAME: 'testuser',
             PASSWORD: 'testpassword',
-            COUNTRY_CODE: 'testcode',
+            COUNTRY_DIAL_CODE: 'testcode',
             CONTACT_NUMBER: 'testnumber'
         }
 
@@ -65,7 +63,7 @@ class SignupViewTests(TestCase):
         self.assertEqual(response.json(), error_missing_field)
 
         data = self.data
-        data.pop(COUNTRY_CODE)
+        data.pop(COUNTRY_DIAL_CODE)
         response = self.client.post(self.url, json.dumps(
             data), content_type='application/json')
         self.assertEqual(response.status_code, 400)
@@ -79,22 +77,25 @@ class SignupViewTests(TestCase):
         self.assertEqual(response.json(), error_missing_field)
 
     def test_initiate_signup_for_existing_username(self):
-        jwt_token = jwt.encode(
-            {USERNAME: self.data.get(USERNAME)}, settings.SECRET_KEY)
-
-        pending_otp_validation = PendingOtpValidation(
-            self.data.get(USERNAME),
-            'testpassword', 1234)
-        self.redis_con.set(jwt_token, json.dumps(
-            pending_otp_validation._asdict()))
-
+        _ = self.client.post(self.url, json.dumps(
+            self.data), content_type='application/json')
         response = self.client.post(self.url, json.dumps(
             self.data), content_type='application/json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(),  error_username_exists)
 
     def test_initiate_signup_with_invalid_json(self):
-        data = 'invalid json'
+        data = self.data
+        # contact number is supposed to be a string
+        data[CONTACT_NUMBER] = 8801674880035  # type: ignore
+        response = self.client.post(
+            self.url, data, content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(),  error_invalid_json)
+
+        data = self.data
+        # country code is supposed to be a string
+        self.data[COUNTRY_DIAL_CODE] = 880  # type: ignore
         response = self.client.post(
             self.url, data, content_type='application/json')
         self.assertEqual(response.status_code, 400)

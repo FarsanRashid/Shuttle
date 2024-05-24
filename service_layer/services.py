@@ -7,8 +7,9 @@ import jwt
 import redis
 
 from accounts.models import Passenger
-from utils.attributes import OTP, PASSWORD, USERNAME
-from utils.otp_sender import DianaHost
+from utils.attributes import CONTACT_NUMBER, COUNTRY_DIAL_CODE, error_invalid_json, error_missing_field, OTP, PASSWORD, USERNAME
+from utils.config import SIGNUP_OTP_TTL
+from utils.otp_sender import get_sms_sender
 
 
 class InvalidPayload(Exception):
@@ -20,12 +21,16 @@ class UserNameNotUnique(Exception):
 
 
 PendingOtpValidation = namedtuple(
-    'PendingOtpValidation', [USERNAME, PASSWORD, OTP])
+    'PendingOtpValidation', [PASSWORD, OTP, COUNTRY_DIAL_CODE, CONTACT_NUMBER])
 
 
-def initate_signup(username, password, country_code, contact_number, cache: redis.Redis):
-    if not username or not password or not country_code or not contact_number:
-        raise InvalidPayload
+def initate_signup(username, password, country_dial_code, contact_number, cache: redis.Redis):
+    if not all([username, password, country_dial_code, contact_number]):
+        raise InvalidPayload(error_missing_field)
+
+    if not all(isinstance(value, str)
+               for value in [username, password, country_dial_code, contact_number]):
+        raise InvalidPayload(error_invalid_json)
 
     if Passenger.objects.filter(username=username).exists():
         raise UserNameNotUnique
@@ -33,13 +38,19 @@ def initate_signup(username, password, country_code, contact_number, cache: redi
     jwt_token = jwt.encode(
         {USERNAME: username, }, settings.SECRET_KEY)
 
-    otp = random.randint(1000, 9999)
+    otp = str(random.randint(1000, 9999))
     pending_otp_validation = PendingOtpValidation(
-        username, password, otp)
+        password, otp, country_dial_code.strip(),
+        contact_number.strip())
 
     if cache.set(jwt_token,
-                 json.dumps(pending_otp_validation._asdict()), nx=True, ex=300):
-        otp_sender = DianaHost()
-        otp_sender.send(otp)
+                 json.dumps(pending_otp_validation._asdict()), nx=True,
+                 ex=SIGNUP_OTP_TTL):
+        try:
+            otp_sender = get_sms_sender(pending_otp_validation.country_code)
+            otp_sender.send(pending_otp_validation.contact_number, otp)
+        except Exception as e:
+            cache.delete(jwt_token)
+            raise e
         return jwt_token
     raise UserNameNotUnique

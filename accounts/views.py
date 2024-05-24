@@ -7,7 +7,7 @@ import redis
 from service_layer import services
 from utils.attributes import (
     CONTACT_NUMBER,
-    COUNTRY_CODE,
+    COUNTRY_DIAL_CODE,
     PASSWORD,
     TOKEN,
     USERNAME,
@@ -28,12 +28,11 @@ def initiate_signup(request):
             data = json.loads(request.body)
             username = data.get(USERNAME)
             password = data.get(PASSWORD)
-            country_code = data.get(COUNTRY_CODE)
+            country_dial_code = data.get(COUNTRY_DIAL_CODE)
             contact_number = data.get(CONTACT_NUMBER)
 
             jwt_token = services.initate_signup(username,
-                                                password,
-                                                country_code,
+                                                password, country_dial_code,
                                                 contact_number,
                                                 redis.Redis(
                                                     host=REDIS_HOST, port=REDIS_PORT,
@@ -42,8 +41,8 @@ def initiate_signup(request):
             success_signup_initiate[TOKEN] = jwt_token
             return JsonResponse(success_signup_initiate, status=201)
 
-        except services.InvalidPayload:
-            return JsonResponse(error_missing_field, status=400)
+        except services.InvalidPayload as e:
+            return JsonResponse(e.args[0], status=400)
         except services.UserNameNotUnique:
             return JsonResponse(error_username_exists, status=400)
         except json.JSONDecodeError:
