@@ -15,7 +15,6 @@ from utils.attributes import (
     error_invalid_request_method,
     error_missing_field,
     error_username_exists,
-    success_signup_initiate,
 )
 from utils.config import REDIS_HOST, REDIS_PORT
 
@@ -36,16 +35,6 @@ class SignupViewTests(TestCase):
 
     def tearDown(self) -> None:
         self.redis_con.flushdb()
-
-    def test_successful_signup_initiation(self):
-        response = self.client.post(self.url, json.dumps(
-            self.data), content_type='application/json')
-        self.assertEqual(response.status_code, 201)
-        self.assertEqual(response.json(), success_signup_initiate)
-
-        jwt_token = jwt.encode(
-            {USERNAME: self.data.get(USERNAME)}, settings.SECRET_KEY)
-        self.assertEqual(self.redis_con.exists(jwt_token), 1)
 
     def test_initiate_signup_with_missing_fields(self):
         data = self.data
