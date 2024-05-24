@@ -24,10 +24,10 @@ class SignupViewTests(TestCase):
         self.redis_con = redis.Redis(
             host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)
         self.data = {
-            USERNAME: 'testuser',
+            USERNAME: 'farsan',
             PASSWORD: 'testpassword',
-            COUNTRY_DIAL_CODE: 'testcode',
-            CONTACT_NUMBER: 'testnumber'
+            COUNTRY_DIAL_CODE: '880',
+            CONTACT_NUMBER: '1674880035'
         }
 
     def tearDown(self) -> None:
