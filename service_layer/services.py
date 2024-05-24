@@ -32,13 +32,18 @@ PendingOtpValidation = namedtuple(
     'PendingOtpValidation', [PASSWORD, OTP, COUNTRY_DIAL_CODE, CONTACT_NUMBER])
 
 
-def initate_signup(username, password, country_dial_code, contact_number, cache: redis.Redis):
-    if not all([username, password, country_dial_code, contact_number]):
+def validate_payload(payload: tuple):
+    if not all(payload):
         raise InvalidPayload(error_missing_field)
 
     if not all(isinstance(value, str)
-               for value in [username, password, country_dial_code, contact_number]):
+               for value in payload):
         raise InvalidPayload(error_invalid_json)
+
+
+def initate_signup(username, password, country_dial_code, contact_number, cache: redis.Redis):
+
+    validate_payload((username, password, country_dial_code, contact_number))
 
     if Passenger.objects.filter(username=username).exists():
         raise UserNameNotUnique
