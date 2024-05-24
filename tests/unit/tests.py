@@ -1,9 +1,8 @@
 import json
+from unittest.mock import MagicMock, patch
 
-from django.conf import settings
 from django.test import Client, TestCase
 from django.urls import reverse
-import jwt
 import redis
 
 from utils.attributes import (
@@ -65,7 +64,8 @@ class SignupViewTests(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), error_missing_field)
 
-    def test_initiate_signup_for_existing_username(self):
+    @patch('service_layer.services.get_sms_sender', return_value=MagicMock())
+    def test_initiate_signup_for_existing_username(self, _):
         _ = self.client.post(self.url, json.dumps(
             self.data), content_type='application/json')
         response = self.client.post(self.url, json.dumps(
