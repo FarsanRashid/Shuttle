@@ -7,7 +7,15 @@ import jwt
 import redis
 
 from accounts.models import Passenger
-from utils.attributes import CONTACT_NUMBER, COUNTRY_DIAL_CODE, error_invalid_json, error_missing_field, OTP, PASSWORD, USERNAME
+from utils.attributes import (
+    CONTACT_NUMBER,
+    COUNTRY_DIAL_CODE,
+    OTP,
+    PASSWORD,
+    USERNAME,
+    error_invalid_json,
+    error_missing_field,
+)
 from utils.config import SIGNUP_OTP_TTL
 from utils.otp_sender import get_sms_sender
 

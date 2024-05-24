@@ -13,7 +13,6 @@ from utils.attributes import (
     USERNAME,
     error_invalid_json,
     error_invalid_request_method,
-    error_missing_field,
     error_server_exception,
     error_username_exists,
     success_signup_initiate,
