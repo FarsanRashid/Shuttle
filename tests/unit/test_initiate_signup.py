@@ -64,7 +64,7 @@ class InitiateSignupTests(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), error_missing_field)
 
-    @patch('service_layer.services.get_sms_sender', return_value=MagicMock())
+    @patch('service_layer.initiate_signup.get_sms_sender', return_value=MagicMock())
     def test_initiate_signup_for_existing_username(self, _):
         _ = self.client.post(self.url, json.dumps(
             self.data), content_type='application/json')
