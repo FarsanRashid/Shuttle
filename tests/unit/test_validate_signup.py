@@ -23,7 +23,7 @@ class ValidateSignupTests(TestCase):
         self.assertEqual(response.json(),
                          error_invalid_request_method)
 
-    def test_valiate_signup_with_missing_fields(self):
+    def test_validate_signup_with_missing_fields(self):
         data = self.data
         data.pop(TOKEN)
         response = self.client.post(self.url, json.dumps(
