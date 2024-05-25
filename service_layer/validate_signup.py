@@ -1,5 +1,6 @@
-from service_layer.exceptions import InvalidPayload
-from utils.attributes import error_missing_field, error_invalid_json
+from redis import Redis
+from service_layer.exceptions import InvalidPayload, VerificationFailed
+from utils.attributes import error_invalid_token, error_missing_field, error_invalid_json
 
 
 def validate_payload(payload):
@@ -11,5 +12,9 @@ def validate_payload(payload):
         raise InvalidPayload(error_invalid_json)
 
 
-def validate_signup(token, otp, cache):
+def validate_signup(token: str, otp: str, cache: Redis):
     validate_payload((token, otp))
+
+    pending_otp_validation = cache.get(token)
+    if pending_otp_validation is None:
+        raise VerificationFailed(error_invalid_token)

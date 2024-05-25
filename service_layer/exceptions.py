@@ -4,3 +4,7 @@ class InvalidPayload(Exception):
 
 class UserNameNotUnique(Exception):
     pass
+
+
+class VerificationFailed(Exception):
+    pass

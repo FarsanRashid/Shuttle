@@ -5,6 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 import redis
 
 from service_layer import validate_signup
+from service_layer.exceptions import VerificationFailed
 from utils.attributes import (
     OTP,
     TOKEN,
@@ -27,6 +28,8 @@ def validate_signup_view(request):
 
             return JsonResponse({"test": "test"}, status=200)
         except validate_signup.InvalidPayload as e:
+            return JsonResponse(e.args[0], status=400)
+        except VerificationFailed as e:
             return JsonResponse(e.args[0], status=400)
         except Exception:
             return JsonResponse(error_server_exception, status=500)
