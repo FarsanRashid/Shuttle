@@ -14,6 +14,8 @@ CODE_WRONG_METHOD = "incorrect_method"
 CODE_SERVER_EXCEPTION = "server_exception"
 CODE_SIGNUP_INITIATED = "signup_initiated"
 CODE_INVALID_TOKEN = "invalid_token"
+CODE_INVALID_OTP = "incorrect_otp"
+CODE_SIGNUP_VERIFIED = "signup_verified"
 
 
 MESSAGE_MISSING_FIELD = "missing required fields"
@@ -23,6 +25,8 @@ MESSAGE_WRONG_METHOD = "incorrect request method"
 MESSAGE_SERVER_EXCEPTION = "server exception occurred"
 MESSAGE_SIGNUP_INITIATED = "signup initiated successfully"
 MESSAGE_INVALID_TOKEN = "token is invalid/expired"
+MESSAGE_INVALID_OTP = "otp is incorrect/expired"
+MESSAGE_SIGNUP_VERIFIED = "signup verified successfully"
 
 
 error_missing_field = Response(FAILURE,
@@ -39,9 +43,15 @@ error_server_exception = Response(
 error_invalid_token = Response(
     FAILURE, CODE_INVALID_TOKEN, MESSAGE_INVALID_TOKEN)._asdict()
 
+error_incorrect_otp = Response(
+    FAILURE, CODE_INVALID_OTP, MESSAGE_INVALID_OTP)._asdict()
+
 
 success_signup_initiate = Response(
     SUCCESS, CODE_SIGNUP_INITIATED, MESSAGE_SIGNUP_INITIATED)._asdict()
+
+success_signup_verification = Response(
+    SUCCESS, CODE_SIGNUP_VERIFIED, MESSAGE_SIGNUP_VERIFIED)._asdict()
 
 
 TOKEN = "token"
