@@ -7,6 +7,7 @@ import jwt
 import redis
 
 from accounts.models import Passenger
+from service_layer.exceptions import InvalidPayload, UserNameNotUnique
 from utils.attributes import (
     CONTACT_NUMBER,
     COUNTRY_DIAL_CODE,
@@ -18,14 +19,6 @@ from utils.attributes import (
 )
 from utils.config import SIGNUP_OTP_TTL
 from utils.otp_sender import get_sms_sender
-
-
-class InvalidPayload(Exception):
-    pass
-
-
-class UserNameNotUnique(Exception):
-    pass
 
 
 PendingOtpValidation = namedtuple(
