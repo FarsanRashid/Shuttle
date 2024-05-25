@@ -18,7 +18,7 @@ from utils.attributes import (
 from utils.config import REDIS_HOST, REDIS_PORT
 
 
-class SignupViewTests(TestCase):
+class InitiateSignupTests(TestCase):
 
     def setUp(self):
         self.client = Client()
