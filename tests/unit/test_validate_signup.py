@@ -16,6 +16,7 @@ from utils.attributes import (
     success_signup_verification
 )
 from utils.config import REDIS_HOST, REDIS_PORT
+from accounts.models import Passenger
 
 
 class ValidateSignupTests(TestCase):
@@ -159,3 +160,27 @@ class ValidateSignupTests(TestCase):
                                     content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), success_signup_verification)
+
+    @patch('service_layer.initiate_signup.get_sms_sender', return_value=MagicMock())
+    @patch('service_layer.initiate_signup.random.randint')
+    def test_signup_validation_creates_new_user(self, mock_randint, _):
+        initiate_signup_payload = {
+            USERNAME: 'testuser',
+            PASSWORD: 'testpassword',
+            COUNTRY_DIAL_CODE: '880',
+            CONTACT_NUMBER: '1234567890'
+        }
+        mock_otp = "1234"
+        mock_randint.return_value = mock_otp
+
+        signup_initiate_response = self.client.post(reverse(
+            'initiate_signup'), initiate_signup_payload, content_type='application/json')
+
+        self.data[TOKEN] = signup_initiate_response.json()[TOKEN]
+        self.data[OTP] = mock_otp
+        _ = self.client.post(self.url,
+                             self.data,
+                             content_type='application/json')
+        username = initiate_signup_payload[USERNAME]
+        self.assertEqual(Passenger.objects.filter(
+            username=username).count(), 1)
