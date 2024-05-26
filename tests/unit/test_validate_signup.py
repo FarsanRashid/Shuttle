@@ -36,13 +36,13 @@ class ValidateSignupTests(TestCase):
     def tearDown(self) -> None:
         self.redis_con.flushdb()
 
-    def test_invalid_request_method(self):
+    def test_validate_signup_with_invalid_request_method(self):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 405)
         self.assertEqual(response.json(),
                          error_invalid_request_method)
 
-    def test_validate_signup_with_missing_fields(self):
+    def test_validate_signup_with_missing_payload_fields(self):
         data = self.data
         data.pop(TOKEN)
         response = self.client.post(self.url, json.dumps(
@@ -57,7 +57,7 @@ class ValidateSignupTests(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), error_missing_field)
 
-    def test_validate_signup_with_invalid_json(self):
+    def test_validate_signup_with_incorrect_payload_field_type(self):
         data = self.data
         # OTP is supposed to be a string
         data[OTP] = 1234  # type: ignore
