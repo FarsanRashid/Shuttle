@@ -25,12 +25,12 @@ def validate_payload(payload):
 def validate_signup(token: str, otp: str, cache: Redis):
     validate_payload((token, otp))
 
-    pending_otp_validation = cache.get(token)
-    if pending_otp_validation is None:
+    value = cast(str, cache.get(token))
+    if value is None:
         raise VerificationFailed(error_invalid_token)
 
     pending_otp_validation = PendingOtpValidation(
-        **json.loads(pending_otp_validation))
+        **json.loads(value))
 
     if pending_otp_validation.OTP != otp:
         raise VerificationFailed(error_incorrect_otp)
