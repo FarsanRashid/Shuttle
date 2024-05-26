@@ -39,3 +39,4 @@ def validate_signup(token: str, otp: str, cache: Redis):
     Passenger.objects.create_user(
         username=pending_otp_validation.username,
         password=pending_otp_validation.password).save()
+    cache.delete(token)

@@ -142,3 +142,22 @@ class ValidateSignupTests(TestCase):
         username = self.initiate_signup_payload[USERNAME]
         self.assertEqual(Passenger.objects.filter(
             username=username).count(), 1)
+
+    @patch('service_layer.initiate_signup.get_sms_sender', return_value=MagicMock())
+    @patch('service_layer.initiate_signup.random.randint')
+    def test_signup_validation_success_removes_user_from_pending_list(self, mock_randint, _):
+        mock_otp = "1234"
+        mock_randint.return_value = mock_otp
+
+        signup_initiate_response = self.client.post(reverse(
+            'initiate_signup'), self.initiate_signup_payload, content_type='application/json')
+
+        self.data[TOKEN] = signup_initiate_response.json()[TOKEN]
+        self.data[OTP] = mock_otp
+        _ = self.client.post(self.url,
+                             self.data,
+                             content_type='application/json')
+        username = self.initiate_signup_payload[USERNAME]
+        self.assertEqual(Passenger.objects.filter(
+            username=username).count(), 1)
+        self.assertIsNone(self.redis_con.get(self.data[TOKEN]))
