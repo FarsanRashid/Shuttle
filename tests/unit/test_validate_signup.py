@@ -101,7 +101,7 @@ class ValidateSignupTests(TestCase):
 
     @patch('service_layer.initiate_signup.get_sms_sender', return_value=MagicMock())
     @patch('service_layer.initiate_signup.random.randint')
-    def test_validate_signup_with_invalid_otp(self, mock_randint, _):
+    def test_validate_signup_otp_verification(self, mock_randint, _):
         mock_otp = "1234"
         mock_randint.return_value = mock_otp
 
@@ -118,18 +118,6 @@ class ValidateSignupTests(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), error_incorrect_otp)
 
-    @patch('service_layer.initiate_signup.get_sms_sender', return_value=MagicMock())
-    @patch('service_layer.initiate_signup.random.randint')
-    def test_validate_signup_with_valid_otp(self, mock_randint, _):
-        mock_otp = "1234"
-        mock_randint.return_value = mock_otp
-
-        signup_initiate_response = self.client.post(reverse('initiate_signup'), self.initiate_signup_payload,
-                                                    content_type='application/json')
-        self.assertEqual(signup_initiate_response.status_code, 201)
-        # signup initiated successfully
-
-        self.data[TOKEN] = signup_initiate_response.json()[TOKEN]
         self.data[OTP] = mock_otp
         response = self.client.post(self.url,
                                     self.data,
