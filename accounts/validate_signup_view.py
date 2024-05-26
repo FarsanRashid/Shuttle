@@ -27,7 +27,7 @@ def validate_signup_view(request):
             validate_signup.validate_signup(token, otp, redis.Redis(
                 host=REDIS_HOST, port=REDIS_PORT, decode_responses=True))
 
-            return JsonResponse(success_signup_verification, status=200)
+            return JsonResponse(success_signup_verification, status=201)
         except validate_signup.InvalidPayload as e:
             return JsonResponse(e.args[0], status=400)
         except VerificationFailed as e:

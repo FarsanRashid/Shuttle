@@ -96,7 +96,7 @@ class ValidateSignupTests(TestCase):
         self.data[TOKEN] = signup_initiate_response.json()[TOKEN]
         response = self.client.post(self.url,
                                     self.data, content_type='application/json')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(),  success_signup_verification)
 
     @patch('service_layer.initiate_signup.get_sms_sender', return_value=MagicMock())
@@ -122,7 +122,7 @@ class ValidateSignupTests(TestCase):
         response = self.client.post(self.url,
                                     self.data,
                                     content_type='application/json')
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), success_signup_verification)
 
     @patch('service_layer.initiate_signup.get_sms_sender', return_value=MagicMock())
