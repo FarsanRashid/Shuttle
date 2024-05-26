@@ -26,6 +26,12 @@ class ValidateSignupTests(TestCase):
         self.data = {TOKEN: 'testtoken', OTP: 'testotp'}
         self.redis_con = redis.Redis(
             host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)
+        self.initiate_signup_payload = {
+            USERNAME: 'testuser',
+            PASSWORD: 'testpassword',
+            COUNTRY_DIAL_CODE: '880',
+            CONTACT_NUMBER: '1234567890'
+        }
 
     def tearDown(self) -> None:
         self.redis_con.flushdb()
@@ -70,14 +76,8 @@ class ValidateSignupTests(TestCase):
 
     @patch('service_layer.initiate_signup.get_sms_sender', return_value=MagicMock())
     def test_validate_signup_with_invalid_token(self, _):
-        initiate_signup_payload = {
-            USERNAME: 'testuser',
-            PASSWORD: 'testpassword',
-            COUNTRY_DIAL_CODE: '880',
-            CONTACT_NUMBER: '1234567890'
-        }
         signup_initiate_response = self.client.post(
-            reverse('initiate_signup'), initiate_signup_payload, content_type='application/json')
+            reverse('initiate_signup'), self.initiate_signup_payload, content_type='application/json')
         self.assertEqual(signup_initiate_response.status_code, 201)
         # signup initiated successfully
 
@@ -92,15 +92,9 @@ class ValidateSignupTests(TestCase):
     @patch('service_layer.initiate_signup.get_sms_sender', return_value=MagicMock())
     @patch('service_layer.initiate_signup.random.randint')
     def test_validate_signup_with_valid_token(self, mock_randint, _):
-        initiate_signup_payload = {
-            USERNAME: 'testuser',
-            PASSWORD: 'testpassword',
-            COUNTRY_DIAL_CODE: "880",
-            CONTACT_NUMBER: '1234567890'
-        }
         mock_otp = "1234"
         mock_randint.return_value = mock_otp
-        signup_initiate_response = self.client.post(reverse('initiate_signup'), initiate_signup_payload,
+        signup_initiate_response = self.client.post(reverse('initiate_signup'), self.initiate_signup_payload,
                                                     content_type='application/json')
         self.assertEqual(signup_initiate_response.status_code, 201)
         # signup initiated successfully
@@ -114,16 +108,10 @@ class ValidateSignupTests(TestCase):
     @patch('service_layer.initiate_signup.get_sms_sender', return_value=MagicMock())
     @patch('service_layer.initiate_signup.random.randint')
     def test_validate_signup_with_invalid_otp(self, mock_randint, _):
-        initiate_signup_payload = {
-            USERNAME: 'testuser',
-            PASSWORD: 'testpassword',
-            COUNTRY_DIAL_CODE: '880',
-            CONTACT_NUMBER: '1234567890'
-        }
         mock_otp = "1234"
         mock_randint.return_value = mock_otp
 
-        signup_initiate_response = self.client.post(reverse('initiate_signup'), initiate_signup_payload,
+        signup_initiate_response = self.client.post(reverse('initiate_signup'), self.initiate_signup_payload,
                                                     content_type='application/json')
         self.assertEqual(signup_initiate_response.status_code, 201)
         # signup initiated successfully
@@ -139,16 +127,10 @@ class ValidateSignupTests(TestCase):
     @patch('service_layer.initiate_signup.get_sms_sender', return_value=MagicMock())
     @patch('service_layer.initiate_signup.random.randint')
     def test_validate_signup_with_valid_otp(self, mock_randint, _):
-        initiate_signup_payload = {
-            USERNAME: 'testuser',
-            PASSWORD: 'testpassword',
-            COUNTRY_DIAL_CODE: '880',
-            CONTACT_NUMBER: '1234567890'
-        }
         mock_otp = "1234"
         mock_randint.return_value = mock_otp
 
-        signup_initiate_response = self.client.post(reverse('initiate_signup'), initiate_signup_payload,
+        signup_initiate_response = self.client.post(reverse('initiate_signup'), self.initiate_signup_payload,
                                                     content_type='application/json')
         self.assertEqual(signup_initiate_response.status_code, 201)
         # signup initiated successfully
@@ -164,23 +146,17 @@ class ValidateSignupTests(TestCase):
     @patch('service_layer.initiate_signup.get_sms_sender', return_value=MagicMock())
     @patch('service_layer.initiate_signup.random.randint')
     def test_signup_validation_creates_new_user(self, mock_randint, _):
-        initiate_signup_payload = {
-            USERNAME: 'testuser',
-            PASSWORD: 'testpassword',
-            COUNTRY_DIAL_CODE: '880',
-            CONTACT_NUMBER: '1234567890'
-        }
         mock_otp = "1234"
         mock_randint.return_value = mock_otp
 
         signup_initiate_response = self.client.post(reverse(
-            'initiate_signup'), initiate_signup_payload, content_type='application/json')
+            'initiate_signup'), self.initiate_signup_payload, content_type='application/json')
 
         self.data[TOKEN] = signup_initiate_response.json()[TOKEN]
         self.data[OTP] = mock_otp
         _ = self.client.post(self.url,
                              self.data,
                              content_type='application/json')
-        username = initiate_signup_payload[USERNAME]
+        username = self.initiate_signup_payload[USERNAME]
         self.assertEqual(Passenger.objects.filter(
             username=username).count(), 1)
