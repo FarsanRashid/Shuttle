@@ -1,4 +1,3 @@
-from collections import namedtuple
 import json
 import random
 
@@ -7,22 +6,11 @@ import jwt
 import redis
 
 from accounts.models import Passenger
+from domain.model import PendingOtpValidation
 from service_layer.exceptions import InvalidPayload, UserNameNotUnique
-from utils.attributes import (
-    CONTACT_NUMBER,
-    COUNTRY_DIAL_CODE,
-    OTP,
-    PASSWORD,
-    USERNAME,
-    error_invalid_json,
-    error_missing_field,
-)
+from utils.attributes import USERNAME, error_invalid_json, error_missing_field
 from utils.config import SIGNUP_OTP_TTL
 from utils.otp_sender import get_sms_sender
-
-
-PendingOtpValidation = namedtuple(
-    'PendingOtpValidation', [USERNAME, PASSWORD, OTP, COUNTRY_DIAL_CODE, CONTACT_NUMBER])
 
 
 def validate_payload(payload: tuple):

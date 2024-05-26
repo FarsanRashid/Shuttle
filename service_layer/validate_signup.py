@@ -1,21 +1,16 @@
 import json
 
-from django.conf import settings
-import jwt
 from redis import Redis
 
+from accounts.models import Passenger
+from domain.model import PendingOtpValidation
 from service_layer.exceptions import InvalidPayload, VerificationFailed
 from utils.attributes import (
-    OTP,
-    USERNAME,
-    PASSWORD,
     error_incorrect_otp,
     error_invalid_json,
     error_invalid_token,
     error_missing_field,
 )
-
-from accounts.models import Passenger
 
 
 def validate_payload(payload):
@@ -34,13 +29,14 @@ def validate_signup(token: str, otp: str, cache: Redis):
     if pending_otp_validation is None:
         raise VerificationFailed(error_invalid_token)
 
-    pending_otp_validation = json.loads(pending_otp_validation)
+    pending_otp_validation = PendingOtpValidation(
+        **json.loads(pending_otp_validation))
 
-    if pending_otp_validation.get(OTP) != otp:
+    if pending_otp_validation.OTP != otp:
         raise VerificationFailed(error_incorrect_otp)
 
-    username = pending_otp_validation.get(USERNAME)
-    password = pending_otp_validation.get(PASSWORD)
+    username = pending_otp_validation.username
+    password = pending_otp_validation.password
 
     Passenger.objects.create_user(
         username=username, password=password).save()
