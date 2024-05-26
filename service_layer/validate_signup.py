@@ -1,4 +1,5 @@
 import json
+from typing import cast
 
 from redis import Redis
 
@@ -35,8 +36,6 @@ def validate_signup(token: str, otp: str, cache: Redis):
     if pending_otp_validation.OTP != otp:
         raise VerificationFailed(error_incorrect_otp)
 
-    username = pending_otp_validation.username
-    password = pending_otp_validation.password
-
     Passenger.objects.create_user(
-        username=username, password=password).save()
+        username=pending_otp_validation.username,
+        password=pending_otp_validation.password).save()
