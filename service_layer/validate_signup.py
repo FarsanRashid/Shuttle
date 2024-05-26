@@ -39,8 +39,8 @@ def validate_signup(token: str, otp: str, cache: Redis):
     if pending_otp_validation.get(OTP) != otp:
         raise VerificationFailed(error_incorrect_otp)
 
-    username = jwt.decode(token, settings.SECRET_KEY,
-                          algorithms=["HS256"]).get(USERNAME)
+    username = pending_otp_validation.get(USERNAME)
     password = pending_otp_validation.get(PASSWORD)
+
     Passenger.objects.create_user(
         username=username, password=password).save()

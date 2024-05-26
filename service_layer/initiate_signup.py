@@ -22,7 +22,7 @@ from utils.otp_sender import get_sms_sender
 
 
 PendingOtpValidation = namedtuple(
-    'PendingOtpValidation', [PASSWORD, OTP, COUNTRY_DIAL_CODE, CONTACT_NUMBER])
+    'PendingOtpValidation', [USERNAME, PASSWORD, OTP, COUNTRY_DIAL_CODE, CONTACT_NUMBER])
 
 
 def validate_payload(payload: tuple):
@@ -45,9 +45,9 @@ def initate_signup(username, password, country_dial_code, contact_number, cache:
         {USERNAME: username, }, settings.SECRET_KEY)
 
     otp = str(random.randint(1000, 9999))
-    pending_otp_validation = PendingOtpValidation(
-        password, otp, country_dial_code.strip(),
-        contact_number.strip())
+    pending_otp_validation = PendingOtpValidation(username,
+                                                  password, otp, country_dial_code.strip(),
+                                                  contact_number.strip())
 
     if cache.set(jwt_token,
                  json.dumps(pending_otp_validation._asdict()), nx=True,
