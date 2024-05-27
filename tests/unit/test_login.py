@@ -7,6 +7,7 @@ from django.urls import reverse
 from utils.attributes import (
     PASSWORD,
     USERNAME,
+    error_invalid_credentials,
     error_invalid_request_method,
     error_missing_field,
     success_login,
@@ -68,3 +69,15 @@ class LoginTests(TestCase):
                                     content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), success_login)
+
+    def test_login_with_invalid_credentials(self):
+
+        self.login_data[PASSWORD] = 'wrongpassword'
+
+        response = self.client.post(
+            self.login_url,
+            data=json.dumps(self.login_data),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(error_invalid_credentials, response.json())

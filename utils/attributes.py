@@ -17,6 +17,7 @@ CODE_INVALID_TOKEN = "invalid_token"
 CODE_INVALID_OTP = "incorrect_otp"
 CODE_SIGNUP_VERIFIED = "signup_verified"
 CODE_LOGIN_SUCCESS = "login_success"
+CODE_INVALID_CREDENTIALS = "invalid_credentials"
 
 
 MESSAGE_MISSING_FIELD = "missing required fields"
@@ -29,6 +30,7 @@ MESSAGE_INVALID_TOKEN = "token is invalid/expired"
 MESSAGE_INVALID_OTP = "otp is incorrect/expired"
 MESSAGE_SIGNUP_VERIFIED = "signup verified successfully"
 MESSAGE_LOGIN_SUCCESS = "login successful"
+MESSAGE_INVALID_CREDENTIALS = "username/password is incorrect"
 
 
 error_missing_field = Response(FAILURE,
@@ -57,6 +59,9 @@ success_signup_verification = Response(
 
 success_login = Response(
     SUCCESS, CODE_LOGIN_SUCCESS, MESSAGE_LOGIN_SUCCESS)._asdict()
+
+error_invalid_credentials = Response(
+    FAILURE, CODE_INVALID_CREDENTIALS, MESSAGE_INVALID_CREDENTIALS)._asdict()
 
 
 TOKEN = "token"

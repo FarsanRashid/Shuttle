@@ -9,6 +9,7 @@ from utils.attributes import (
     PASSWORD,
     SESSION_ID,
     USERNAME,
+    error_invalid_credentials,
     error_invalid_json,
     error_invalid_request_method,
     error_missing_field,
@@ -38,7 +39,7 @@ def login_view(request):
                 success_login[SESSION_ID] = session_id
                 return JsonResponse(success_login)
             else:
-                return JsonResponse({'error': 'Invalid username or password'}, status=401)
+                return JsonResponse(error_invalid_credentials, status=401)
 
         except InvalidPayload as e:
             return JsonResponse(e.args[0], status=400)
