@@ -1,22 +1,29 @@
 import json
-import redis
 from unittest.mock import MagicMock, patch
 
 from django.test import Client, TestCase
 from django.urls import reverse
+import redis
 
+from accounts.models import Passenger
 from service_layer.initiate_signup import error_invalid_json
-from utils.attributes import CONTACT_NUMBER, COUNTRY_DIAL_CODE, PASSWORD, USERNAME, error_invalid_json, error_invalid_token
+from utils.attributes import (
+    CONTACT_NUMBER,
+    COUNTRY_DIAL_CODE,
+    PASSWORD,
+    USERNAME,
+    error_invalid_json,
+    error_invalid_token,
+)
 from utils.attributes import (
     OTP,
     TOKEN,
+    error_incorrect_otp,
     error_invalid_request_method,
     error_missing_field,
-    error_incorrect_otp,
-    success_signup_verification
+    success_signup_verification,
 )
 from utils.config import REDIS_HOST, REDIS_PORT
-from accounts.models import Passenger
 
 
 class ValidateSignupTests(TestCase):
@@ -140,11 +147,15 @@ class ValidateSignupTests(TestCase):
                              self.data,
                              content_type='application/json')
         username = self.initiate_signup_payload[USERNAME]
-        self.assertEqual(Passenger.objects.filter(
-            username=username).count(), 1)
+        user = Passenger.objects.filter(username=username)
+        self.assertEqual(user.count(), 1)
+        self.assertEqual(user.first().contact_number,
+                         self.initiate_signup_payload[CONTACT_NUMBER])
+        self.assertEqual(user.first().country_code,
+                         self.initiate_signup_payload[COUNTRY_DIAL_CODE])
 
-    @patch('service_layer.initiate_signup.get_sms_sender', return_value=MagicMock())
-    @patch('service_layer.initiate_signup.random.randint')
+    @ patch('service_layer.initiate_signup.get_sms_sender', return_value=MagicMock())
+    @ patch('service_layer.initiate_signup.random.randint')
     def test_signup_validation_success_removes_user_from_pending_list(self, mock_randint, _):
         mock_otp = "1234"
         mock_randint.return_value = mock_otp
