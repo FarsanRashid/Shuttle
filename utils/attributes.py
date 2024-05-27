@@ -16,6 +16,7 @@ CODE_SIGNUP_INITIATED = "signup_initiated"
 CODE_INVALID_TOKEN = "invalid_token"
 CODE_INVALID_OTP = "incorrect_otp"
 CODE_SIGNUP_VERIFIED = "signup_verified"
+CODE_LOGIN_SUCCESS = "login_success"
 
 
 MESSAGE_MISSING_FIELD = "missing required fields"
@@ -27,6 +28,7 @@ MESSAGE_SIGNUP_INITIATED = "signup initiated successfully"
 MESSAGE_INVALID_TOKEN = "token is invalid/expired"
 MESSAGE_INVALID_OTP = "otp is incorrect/expired"
 MESSAGE_SIGNUP_VERIFIED = "signup verified successfully"
+MESSAGE_LOGIN_SUCCESS = "login successful"
 
 
 error_missing_field = Response(FAILURE,
@@ -53,8 +55,12 @@ success_signup_initiate = Response(
 success_signup_verification = Response(
     SUCCESS, CODE_SIGNUP_VERIFIED, MESSAGE_SIGNUP_VERIFIED)._asdict()
 
+success_login = Response(
+    SUCCESS, CODE_LOGIN_SUCCESS, MESSAGE_LOGIN_SUCCESS)._asdict()
+
 
 TOKEN = "token"
+SESSION_ID = "session_id"
 OTP = "OTP"
 USERNAME = "username"
 PASSWORD = "password"
