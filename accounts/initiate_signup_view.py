@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -19,6 +20,9 @@ from utils.attributes import (
     success_signup_initiate,
 )
 from utils.config import REDIS_HOST, REDIS_PORT
+
+
+logger = logging.getLogger(__name__)
 
 
 @csrf_exempt
@@ -48,6 +52,7 @@ def initiate_signup_view(request):
         except json.JSONDecodeError:
             return JsonResponse(error_invalid_json, status=400)
         except Exception:
+            logger.exception("Error in initiate_signup_view")
             return JsonResponse(error_server_exception, status=500)
     else:
         return JsonResponse(error_invalid_request_method, status=405)
