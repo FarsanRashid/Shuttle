@@ -11,15 +11,15 @@ from utils.attributes import (
     USERNAME,
     error_invalid_credentials,
     error_invalid_json,
+    error_invalid_payload,
     error_invalid_request_method,
-    error_missing_field,
     success_login,
 )
 
 
 def validate_payload(payload):
     if not all(payload):
-        raise InvalidPayload(error_missing_field)
+        raise InvalidPayload(error_invalid_payload)
 
 
 @csrf_exempt

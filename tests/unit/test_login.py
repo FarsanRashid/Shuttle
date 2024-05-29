@@ -8,8 +8,8 @@ from utils.attributes import (
     PASSWORD,
     USERNAME,
     error_invalid_credentials,
+    error_invalid_payload,
     error_invalid_request_method,
-    error_missing_field,
     success_login,
 )
 
@@ -42,7 +42,7 @@ class LoginTests(TestCase):
         self.assertEqual(response.json(),
                          error_invalid_request_method)
 
-    def test_login_missing_fields(self):
+    def test_login_with_invalid_payload(self):
         data = self.login_data
         data.pop(USERNAME)
         response = self.client.post(
@@ -51,7 +51,7 @@ class LoginTests(TestCase):
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), error_missing_field)
+        self.assertEqual(response.json(), error_invalid_payload)
 
         data = self.login_data
         data.pop(PASSWORD)
@@ -61,7 +61,7 @@ class LoginTests(TestCase):
             content_type='application/json'
         )
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), error_missing_field)
+        self.assertEqual(response.json(), error_invalid_payload)
 
     def test_login_success(self):
         response = self.client.post(self.login_url,
