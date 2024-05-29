@@ -9,17 +9,14 @@ from accounts.models import Passenger
 from utils.attributes import (
     CONTACT_NUMBER,
     COUNTRY_DIAL_CODE,
-    PASSWORD,
-    USERNAME,
-    error_invalid_json,
-    error_invalid_token,
-)
-from utils.attributes import (
     OTP,
+    PASSWORD,
     TOKEN,
+    USERNAME,
     error_incorrect_otp,
+    error_invalid_payload,
     error_invalid_request_method,
-    error_missing_field,
+    error_invalid_token,
     success_signup_verification,
 )
 from utils.config import REDIS_HOST, REDIS_PORT
@@ -54,14 +51,14 @@ class ValidateSignupTests(TestCase):
         response = self.client.post(self.url, json.dumps(
             data), content_type='application/json')
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), error_missing_field)
+        self.assertEqual(response.json(), error_invalid_payload)
 
         data = self.data
         data.pop(OTP)
         response = self.client.post(self.url, json.dumps(
             data), content_type='application/json')
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(), error_missing_field)
+        self.assertEqual(response.json(), error_invalid_payload)
 
     def test_validate_signup_with_incorrect_payload_field_type(self):
         data = self.data
@@ -70,7 +67,7 @@ class ValidateSignupTests(TestCase):
         response = self.client.post(
             self.url, data, content_type='application/json')
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(),  error_invalid_json)
+        self.assertEqual(response.json(),  error_invalid_payload)
 
         data = self.data
         # token is supposed to be a string
@@ -78,7 +75,7 @@ class ValidateSignupTests(TestCase):
         response = self.client.post(
             self.url, data, content_type='application/json')
         self.assertEqual(response.status_code, 400)
-        self.assertEqual(response.json(),  error_invalid_json)
+        self.assertEqual(response.json(),  error_invalid_payload)
 
     @patch('service_layer.initiate_signup.get_sms_sender', return_value=MagicMock())
     @patch('service_layer.initiate_signup.random.randint')

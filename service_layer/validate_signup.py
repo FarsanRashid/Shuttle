@@ -8,19 +8,18 @@ from domain.model import PendingOtpValidation
 from service_layer.exceptions import InvalidPayload, VerificationFailed
 from utils.attributes import (
     error_incorrect_otp,
-    error_invalid_json,
     error_invalid_token,
-    error_missing_field,
+    error_invalid_payload
 )
 
 
 def validate_payload(payload):
     if not all(payload):
-        raise InvalidPayload(error_missing_field)
+        raise InvalidPayload(error_invalid_payload)
 
     if not all(isinstance(value, str)
                for value in payload):
-        raise InvalidPayload(error_invalid_json)
+        raise InvalidPayload(error_invalid_payload)
 
 
 def validate_signup(token: str, otp: str, cache: Redis):
