@@ -7,7 +7,6 @@ FAILURE = "failure"
 
 Response = namedtuple('Response', ['status', 'code', 'message'])
 
-CODE_MISSING_FIELD = "missing_field"
 CODE_NON_UNIQUE_USER = "non_unique_user"
 CODE_INVALID_JSON = "invalid_json"
 CODE_WRONG_METHOD = "incorrect_method"
@@ -21,7 +20,6 @@ CODE_INVALID_CREDENTIALS = "invalid_credentials"
 CODE_INVALID_PAYLOAD = "invalid_payload"
 
 
-MESSAGE_MISSING_FIELD = "missing required fields"
 MESSAGE_NON_UNIQUE_USER = "username already exists"
 MESSAGE_INVALID_JSON = "invalid json payload"
 MESSAGE_WRONG_METHOD = "incorrect request method"
@@ -35,8 +33,6 @@ MESSAGE_INVALID_CREDENTIALS = "username/password is incorrect"
 MESSAGE_INVALID_PAYLOAD = "payload validation failed"
 
 
-error_missing_field = Response(FAILURE,
-                               CODE_MISSING_FIELD, MESSAGE_MISSING_FIELD)._asdict()
 error_username_exists = Response(FAILURE,
                                  CODE_NON_UNIQUE_USER, MESSAGE_NON_UNIQUE_USER)._asdict()
 error_invalid_json = Response(FAILURE,
