@@ -35,28 +35,28 @@ class InitiateSignupTests(TestCase):
         self.redis_con.flushdb()
 
     def test_initiate_signup_with_missing_fields(self):
-        data = self.data
+        data = self.data.copy()
         data.pop(USERNAME)
         response = self.client.post(self.url, json.dumps(
             data), content_type='application/json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), error_invalid_payload)
 
-        data = self.data
+        data = self.data.copy()
         data.pop(PASSWORD)
         response = self.client.post(self.url, json.dumps(
             data), content_type='application/json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), error_invalid_payload)
 
-        data = self.data
+        data = self.data.copy()
         data.pop(COUNTRY_DIAL_CODE)
         response = self.client.post(self.url, json.dumps(
             data), content_type='application/json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), error_invalid_payload)
 
-        data = self.data
+        data = self.data.copy()
         data.pop(CONTACT_NUMBER)
         response = self.client.post(self.url, json.dumps(
             data), content_type='application/json')
@@ -73,7 +73,7 @@ class InitiateSignupTests(TestCase):
         self.assertEqual(response.json(),  error_username_exists)
 
     def test_initiate_signup_with_invalid_payload(self):
-        data = self.data
+        data = self.data.copy()
         # contact number is supposed to be a string
         data[CONTACT_NUMBER] = ' '
         response = self.client.post(
@@ -81,9 +81,9 @@ class InitiateSignupTests(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(),  error_invalid_payload)
 
-        data = self.data
+        data = self.data.copy()
         # country code is supposed to be a string
-        self.data[COUNTRY_DIAL_CODE] = 880  # type: ignore
+        data[COUNTRY_DIAL_CODE] = 880  # type: ignore
         response = self.client.post(
             self.url, data, content_type='application/json')
         self.assertEqual(response.status_code, 400)

@@ -46,14 +46,14 @@ class ValidateSignupTests(TestCase):
                          error_invalid_request_method)
 
     def test_validate_signup_with_missing_payload_fields(self):
-        data = self.data
+        data = self.data.copy()
         data.pop(TOKEN)
         response = self.client.post(self.url, json.dumps(
             data), content_type='application/json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), error_invalid_payload)
 
-        data = self.data
+        data = self.data.copy()
         data.pop(OTP)
         response = self.client.post(self.url, json.dumps(
             data), content_type='application/json')
@@ -61,7 +61,7 @@ class ValidateSignupTests(TestCase):
         self.assertEqual(response.json(), error_invalid_payload)
 
     def test_validate_signup_with_incorrect_payload_field_type(self):
-        data = self.data
+        data = self.data.copy()
         # OTP is supposed to be a string
         data[OTP] = 1234  # type: ignore
         response = self.client.post(
@@ -69,9 +69,9 @@ class ValidateSignupTests(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(),  error_invalid_payload)
 
-        data = self.data
+        data = self.data.copy()
         # token is supposed to be a string
-        self.data[TOKEN] = 1233  # type: ignore
+        data[TOKEN] = 1233  # type: ignore
         response = self.client.post(
             self.url, data, content_type='application/json')
         self.assertEqual(response.status_code, 400)
