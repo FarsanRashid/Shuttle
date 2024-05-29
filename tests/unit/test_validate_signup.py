@@ -6,7 +6,6 @@ from django.urls import reverse
 import redis
 
 from accounts.models import Passenger
-from service_layer.initiate_signup import error_invalid_json
 from utils.attributes import (
     CONTACT_NUMBER,
     COUNTRY_DIAL_CODE,

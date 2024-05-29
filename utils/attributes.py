@@ -18,6 +18,7 @@ CODE_INVALID_OTP = "incorrect_otp"
 CODE_SIGNUP_VERIFIED = "signup_verified"
 CODE_LOGIN_SUCCESS = "login_success"
 CODE_INVALID_CREDENTIALS = "invalid_credentials"
+CODE_INVALID_PAYLOAD = "invalid_payload"
 
 
 MESSAGE_MISSING_FIELD = "missing required fields"
@@ -31,6 +32,7 @@ MESSAGE_INVALID_OTP = "otp is incorrect/expired"
 MESSAGE_SIGNUP_VERIFIED = "signup verified successfully"
 MESSAGE_LOGIN_SUCCESS = "login successful"
 MESSAGE_INVALID_CREDENTIALS = "username/password is incorrect"
+MESSAGE_INVALID_PAYLOAD = "payload validation failed"
 
 
 error_missing_field = Response(FAILURE,
@@ -49,6 +51,9 @@ error_invalid_token = Response(
 
 error_incorrect_otp = Response(
     FAILURE, CODE_INVALID_OTP, MESSAGE_INVALID_OTP)._asdict()
+
+error_invalid_payload = Response(
+    FAILURE, CODE_INVALID_PAYLOAD, MESSAGE_INVALID_PAYLOAD)._asdict()
 
 
 success_signup_initiate = Response(
