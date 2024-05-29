@@ -43,7 +43,7 @@ class LoginTests(TestCase):
                          error_invalid_request_method)
 
     def test_login_with_invalid_payload(self):
-        data = self.login_data
+        data = self.login_data.copy()
         data.pop(USERNAME)
         response = self.client.post(
             self.login_url,
@@ -53,8 +53,20 @@ class LoginTests(TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), error_invalid_payload)
 
-        data = self.login_data
+        data = self.login_data.copy()
         data.pop(PASSWORD)
+        response = self.client.post(
+            self.login_url,
+            data=json.dumps(data),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), error_invalid_payload)
+
+        data = self.login_data.copy()
+        # PASSWORD is supposed to be in str format
+        data[PASSWORD] = 1234  # type: ignore
+
         response = self.client.post(
             self.login_url,
             data=json.dumps(data),

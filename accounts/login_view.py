@@ -18,7 +18,8 @@ from utils.attributes import (
 
 
 def validate_payload(payload):
-    if not all(payload):
+    if not all(isinstance(value, str)
+               for value in payload):
         raise InvalidPayload(error_invalid_payload)
 
 
