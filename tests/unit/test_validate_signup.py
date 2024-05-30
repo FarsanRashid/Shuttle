@@ -148,8 +148,8 @@ class ValidateSignupTests(TestCase):
         self.assertEqual(user.first().country_code,
                          self.initiate_signup_payload[COUNTRY_DIAL_CODE])
 
-    @ patch('service_layer.initiate_signup.get_sms_sender', return_value=MagicMock())
-    @ patch('service_layer.initiate_signup.random.randint')
+    @patch('service_layer.initiate_signup.get_sms_sender', return_value=MagicMock())
+    @patch('service_layer.initiate_signup.random.randint')
     def test_signup_validation_success_removes_user_from_pending_list(self, mock_randint, _):
         mock_otp = "1234"
         mock_randint.return_value = mock_otp
