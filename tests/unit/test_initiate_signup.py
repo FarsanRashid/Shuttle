@@ -3,8 +3,8 @@ from unittest.mock import MagicMock, patch
 
 from django.test import Client, TestCase
 from django.urls import reverse
-import redis
 
+from adapters.cache import RedisCache
 from utils.attributes import (
     CONTACT_NUMBER,
     COUNTRY_DIAL_CODE,
@@ -14,7 +14,6 @@ from utils.attributes import (
     error_invalid_request_method,
     error_username_exists,
 )
-from utils.config import REDIS_HOST, REDIS_PORT
 
 
 class InitiateSignupTests(TestCase):
@@ -22,8 +21,7 @@ class InitiateSignupTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.url = reverse('initiate_signup')
-        self.redis_con = redis.Redis(
-            host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)
+        self.cache = RedisCache()
         self.data = {
             USERNAME: 'testuser',
             PASSWORD: 'testpassword',
@@ -32,7 +30,7 @@ class InitiateSignupTests(TestCase):
         }
 
     def tearDown(self) -> None:
-        self.redis_con.flushdb()
+        self.cache.delete_all_key()
 
     def test_initiate_signup_with_missing_fields(self):
         data = self.data.copy()

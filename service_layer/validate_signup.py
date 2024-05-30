@@ -1,15 +1,14 @@
 import json
 from typing import cast
 
-from redis import Redis
-
 from accounts.models import Passenger
+from adapters.cache import AbstractCache
 from domain.model import PendingOtpValidation
 from service_layer.exceptions import InvalidPayload, VerificationFailed
 from utils.attributes import (
     error_incorrect_otp,
+    error_invalid_payload,
     error_invalid_token,
-    error_invalid_payload
 )
 
 
@@ -22,7 +21,7 @@ def validate_payload(payload):
         raise InvalidPayload(error_invalid_payload)
 
 
-def validate_signup(token: str, otp: str, cache: Redis):
+def validate_signup(token: str, otp: str, cache: AbstractCache):
     validate_payload((token, otp))
 
     value = cast(str, cache.get(token))

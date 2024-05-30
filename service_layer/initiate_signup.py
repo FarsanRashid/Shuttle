@@ -4,9 +4,9 @@ from typing import Any
 
 from django.conf import settings
 import jwt
-import redis
 
 from accounts.models import Passenger
+from adapters.cache import AbstractCache
 from domain.model import PendingOtpValidation
 from service_layer.exceptions import InvalidPayload, UserNameNotUnique
 from utils.attributes import USERNAME, error_invalid_payload
@@ -25,7 +25,7 @@ def validate_payload(username, password, country_dial_code, contact_number):
         raise InvalidPayload(error_invalid_payload)
 
 
-def initate_signup(username, password, country_dial_code, contact_number, cache: redis.Redis):
+def initate_signup(username, password, country_dial_code, contact_number, cache: AbstractCache):
 
     validate_payload(username, password, country_dial_code, contact_number)
 
@@ -40,9 +40,10 @@ def initate_signup(username, password, country_dial_code, contact_number, cache:
                                                   password, otp, country_dial_code.strip(),
                                                   contact_number.strip())
 
-    if cache.set(jwt_token,
-                 json.dumps(pending_otp_validation._asdict()), nx=True,
-                 ex=SIGNUP_OTP_TTL):
+    if cache.set_with_TTL_if_not_exists(jwt_token,
+                                        json.dumps(
+                                            pending_otp_validation._asdict()),
+                                        SIGNUP_OTP_TTL):
         try:
             otp_sender = get_sms_sender(pending_otp_validation.country_code)
             otp_sender.send(pending_otp_validation.contact_number, otp)

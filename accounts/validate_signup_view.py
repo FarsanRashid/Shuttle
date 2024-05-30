@@ -2,8 +2,8 @@ import json
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-import redis
 
+from adapters.cache import RedisCache
 from service_layer import validate_signup
 from service_layer.exceptions import VerificationFailed
 from utils.attributes import (
@@ -14,7 +14,6 @@ from utils.attributes import (
     error_invalid_json,
     success_signup_verification
 )
-from utils.config import REDIS_HOST, REDIS_PORT
 
 
 @csrf_exempt
@@ -25,8 +24,7 @@ def validate_signup_view(request):
             token = data.get(TOKEN)
             otp = data.get(OTP)
 
-            validate_signup.validate_signup(token, otp, redis.Redis(
-                host=REDIS_HOST, port=REDIS_PORT, decode_responses=True))
+            validate_signup.validate_signup(token, otp, RedisCache())
 
             return JsonResponse(success_signup_verification, status=201)
         except json.JSONDecodeError:

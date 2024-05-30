@@ -3,9 +3,9 @@ from unittest.mock import MagicMock, patch
 
 from django.test import Client, TestCase
 from django.urls import reverse
-import redis
 
 from accounts.models import Passenger
+from adapters.cache import RedisCache
 from utils.attributes import (
     CONTACT_NUMBER,
     COUNTRY_DIAL_CODE,
@@ -19,7 +19,6 @@ from utils.attributes import (
     error_invalid_token,
     success_signup_verification,
 )
-from utils.config import REDIS_HOST, REDIS_PORT
 
 
 class ValidateSignupTests(TestCase):
@@ -27,8 +26,7 @@ class ValidateSignupTests(TestCase):
         self.client = Client()
         self.url = reverse('validate_signup')
         self.data = {TOKEN: 'testtoken', OTP: 'testotp'}
-        self.redis_con = redis.Redis(
-            host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)
+        self.cache = RedisCache()
         self.initiate_signup_payload = {
             USERNAME: 'testuser',
             PASSWORD: 'testpassword',
@@ -37,7 +35,7 @@ class ValidateSignupTests(TestCase):
         }
 
     def tearDown(self) -> None:
-        self.redis_con.flushdb()
+        self.cache.delete_all_key()
 
     def test_validate_signup_with_invalid_request_method(self):
         response = self.client.get(self.url)
@@ -167,4 +165,4 @@ class ValidateSignupTests(TestCase):
         username = self.initiate_signup_payload[USERNAME]
         self.assertEqual(Passenger.objects.filter(
             username=username).count(), 1)
-        self.assertIsNone(self.redis_con.get(self.data[TOKEN]))
+        self.assertIsNone(self.cache.get(self.data[TOKEN]))

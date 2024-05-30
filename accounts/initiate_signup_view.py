@@ -3,8 +3,8 @@ import logging
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-import redis
 
+from adapters.cache import RedisCache
 from service_layer.exceptions import InvalidPayload, UserNameNotUnique
 from service_layer.initiate_signup import initate_signup
 from utils.attributes import (
@@ -19,7 +19,6 @@ from utils.attributes import (
     error_username_exists,
     success_signup_initiate,
 )
-from utils.config import REDIS_HOST, REDIS_PORT
 
 
 logger = logging.getLogger(__name__)
@@ -38,9 +37,8 @@ def initiate_signup_view(request):
             jwt_token = initate_signup(username,
                                        password, country_dial_code,
                                        contact_number,
-                                       redis.Redis(
-                                           host=REDIS_HOST, port=REDIS_PORT,
-                                           decode_responses=True))
+                                       RedisCache()
+                                       )
 
             success_signup_initiate[TOKEN] = jwt_token
             return JsonResponse(success_signup_initiate, status=201)

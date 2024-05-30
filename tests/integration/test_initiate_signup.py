@@ -5,8 +5,8 @@ from django.test import TestCase
 from django.test.client import Client
 from django.urls import reverse
 import jwt
-import redis
 
+from adapters.cache import RedisCache
 from utils.attributes import (
     CONTACT_NUMBER,
     COUNTRY_DIAL_CODE,
@@ -14,15 +14,13 @@ from utils.attributes import (
     USERNAME,
     success_signup_initiate,
 )
-from utils.config import REDIS_HOST, REDIS_PORT
 
 
 class InitiateSignupTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.url = reverse('initiate_signup')
-        self.redis_con = redis.Redis(
-            host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)
+        self.cache = RedisCache()
         self.data = {
             USERNAME: 'farsan',
             PASSWORD: 'testpassword',
@@ -31,7 +29,7 @@ class InitiateSignupTests(TestCase):
         }
 
     def tearDown(self) -> None:
-        self.redis_con.flushdb()
+        self.cache.delete_all_key()
 
     def test_successful_signup_initiation(self):
         response = self.client.post(self.url, json.dumps(
@@ -41,4 +39,4 @@ class InitiateSignupTests(TestCase):
 
         jwt_token = jwt.encode(
             {USERNAME: self.data.get(USERNAME)}, settings.SECRET_KEY)
-        self.assertEqual(self.redis_con.exists(jwt_token), 1)
+        self.assertEqual(self.cache.exists(jwt_token), 1)
