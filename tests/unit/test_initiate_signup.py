@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from adapters.cache import RedisCache
+from utils import config
 from utils.attributes import (
     CONTACT_NUMBER,
     COUNTRY_DIAL_CODE,
@@ -21,7 +21,7 @@ class InitiateSignupTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.url = reverse('initiate_signup')
-        self.cache = RedisCache()
+        self.cache = config.get_cache()
         self.data = {
             USERNAME: 'testuser',
             PASSWORD: 'testpassword',

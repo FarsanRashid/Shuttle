@@ -5,7 +5,7 @@ from django.test import Client, TestCase
 from django.urls import reverse
 
 from accounts.models import Passenger
-from adapters.cache import RedisCache
+from utils import config
 from utils.attributes import (
     CONTACT_NUMBER,
     COUNTRY_DIAL_CODE,
@@ -26,7 +26,7 @@ class ValidateSignupTests(TestCase):
         self.client = Client()
         self.url = reverse('validate_signup')
         self.data = {TOKEN: 'testtoken', OTP: 'testotp'}
-        self.cache = RedisCache()
+        self.cache = config.get_cache()
         self.initiate_signup_payload = {
             USERNAME: 'testuser',
             PASSWORD: 'testpassword',

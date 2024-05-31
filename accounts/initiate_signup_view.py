@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from adapters.cache import RedisCache
 from service_layer.exceptions import InvalidPayload, UserNameNotUnique
 from service_layer.initiate_signup import initate_signup
+from utils import config
 from utils.attributes import (
     CONTACT_NUMBER,
     COUNTRY_DIAL_CODE,
@@ -34,10 +35,12 @@ def initiate_signup_view(request):
             country_dial_code = data.get(COUNTRY_DIAL_CODE)
             contact_number = data.get(CONTACT_NUMBER)
 
+            cache = config.get_cache()
+
             jwt_token = initate_signup(username,
                                        password, country_dial_code,
                                        contact_number,
-                                       RedisCache()
+                                       cache
                                        )
 
             success_signup_initiate[TOKEN] = jwt_token
