@@ -39,4 +39,4 @@ class InitiateSignupTests(TestCase):
 
         jwt_token = jwt.encode(
             {USERNAME: self.data.get(USERNAME)}, settings.SECRET_KEY)
-        self.assertEqual(self.cache.exists(jwt_token), 1)
+        self.assertIsNotNone(self.cache.get(jwt_token))
