@@ -4,7 +4,6 @@ from unittest.mock import MagicMock, patch
 from django.test import Client, TestCase
 from django.urls import reverse
 
-from utils import config
 from utils.attributes import (
     CONTACT_NUMBER,
     COUNTRY_DIAL_CODE,
@@ -14,6 +13,7 @@ from utils.attributes import (
     error_invalid_request_method,
     error_username_exists,
 )
+from utils.cache_factory import CacheFactory
 
 
 class InitiateSignupTests(TestCase):
@@ -21,7 +21,9 @@ class InitiateSignupTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.url = reverse('initiate_signup')
-        self.cache = config.get_cache()
+
+        cache_factory = CacheFactory()
+        self.cache = cache_factory.get_cache()
         self.data = {
             USERNAME: 'testuser',
             PASSWORD: 'testpassword',

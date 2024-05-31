@@ -3,10 +3,8 @@ import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 
-from adapters.cache import RedisCache
 from service_layer import validate_signup
 from service_layer.exceptions import VerificationFailed
-from utils import config
 from utils.attributes import (
     OTP,
     TOKEN,
@@ -15,6 +13,7 @@ from utils.attributes import (
     error_server_exception,
     success_signup_verification,
 )
+from utils.cache_factory import CacheFactory
 
 
 @csrf_exempt
@@ -25,7 +24,8 @@ def validate_signup_view(request):
             token = data.get(TOKEN)
             otp = data.get(OTP)
 
-            cache = config.get_cache()
+            cache_factory = CacheFactory()
+            cache = cache_factory.get_cache()
 
             validate_signup.validate_signup(token, otp, cache)
 

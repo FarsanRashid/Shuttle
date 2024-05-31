@@ -5,7 +5,6 @@ from django.test import Client, TestCase
 from django.urls import reverse
 
 from accounts.models import Passenger
-from utils import config
 from utils.attributes import (
     CONTACT_NUMBER,
     COUNTRY_DIAL_CODE,
@@ -19,6 +18,7 @@ from utils.attributes import (
     error_invalid_token,
     success_signup_verification,
 )
+from utils.cache_factory import CacheFactory
 
 
 class ValidateSignupTests(TestCase):
@@ -26,7 +26,8 @@ class ValidateSignupTests(TestCase):
         self.client = Client()
         self.url = reverse('validate_signup')
         self.data = {TOKEN: 'testtoken', OTP: 'testotp'}
-        self.cache = config.get_cache()
+        cache_factory = CacheFactory()
+        self.cache = cache_factory.get_cache()
         self.initiate_signup_payload = {
             USERNAME: 'testuser',
             PASSWORD: 'testpassword',
