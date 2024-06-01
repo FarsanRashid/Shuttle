@@ -22,28 +22,30 @@ class AbstractSMSSender(ABC):
 
 class DianaHost(AbstractSMSSender):
     def __init__(self):
-        self.country_dial_code = "880"
-
-    def send(self, contact: str, otp: str):
-        api_url = "https://login.esms.com.bd/api/v3/sms/send"
-        headers = {
+        self.__country_dial_code = "880"
+        self.__api_url = "https://login.esms.com.bd/api/v3/sms/send"
+        self.__headers = {
             "Authorization": f"{BEARER} {os.getenv("DIANA_SMS_API_KEY")}",
             "Accept": "application/json",
         }
+        self.__sender_id = os.getenv("DIANA_SMS_API_SENDER_ID")
+        self.__type = "plain"
+
+    def send(self, contact: str, otp: str):
         _data = {
             "recipient": contact,
-            "sender_id": os.getenv("DIANA_SMS_API_SENDER_ID"),
-            "type": "plain",
+            "sender_id": self.__sender_id,
+            "type": self.__type,
             "message": f"Your shuttle verification code is {otp}. The code will expire in {SIGNUP_OTP_TTL // 60} minutes."
         }
 
-        encoded_url = api_url + "?" + f"recipient={self.country_dial_code}" + \
+        encoded_url = self.__api_url + "?" + f"recipient={self.__country_dial_code}" + \
             _data["recipient"] + "&sender_id=" + \
             _data["sender_id"] + "&type=" + _data["type"] \
             + "&message=" + _data["message"]
 
         response = requests.post(
-            encoded_url, headers=headers, data=str(_data))
+            encoded_url, headers=self.__headers, data=str(_data))
         if response.json().get("status") != "success":
             logger.exception(response.json())
             raise Exception(MESSAGE_SERVER_EXCEPTION)
