@@ -32,24 +32,31 @@ class DianaHost(AbstractSMSSender):
         self.__type = "plain"
 
     def send(self, contact: str, otp: str):
-        _data = {
-            "recipient": contact,
-            "sender_id": self.__sender_id,
-            "type": self.__type,
-            "message": f"Your shuttle verification code is {otp}. The code will expire in {SIGNUP_OTP_TTL // 60} minutes."
-        }
+        try:
+            _data = {
+                "recipient": contact,
+                "sender_id": self.__sender_id,
+                "type": self.__type,
+                "message": f"Your shuttle verification code is {otp}. The code will expire in {SIGNUP_OTP_TTL // 60} minutes."
+            }
 
-        encoded_url = self.__api_url + "?" + f"recipient={self.__country_dial_code}" + \
-            _data["recipient"] + "&sender_id=" + \
-            _data["sender_id"] + "&type=" + _data["type"] \
-            + "&message=" + _data["message"]
+            encoded_url = self.__api_url + "?" + f"recipient={self.__country_dial_code}" + \
+                _data["recipient"] + "&sender_id=" + \
+                _data["sender_id"] + "&type=" + _data["type"] \
+                + "&message=" + _data["message"]
 
-        response = requests.post(
-            encoded_url, headers=self.__headers, data=str(_data))
-        if response.json().get("status") != "success":
-            logger.exception(response.json())
+            response = requests.post(
+                encoded_url, headers=self.__headers, data=str(_data), timeout=5)
+
+            if response.json().get("status") != "success":
+                logger.exception(response.json())
+                raise Exception(MESSAGE_SERVER_EXCEPTION)
+
+            logger.info(response.json())
+
+        except Exception as e:
+            logger.exception(e)
             raise Exception(MESSAGE_SERVER_EXCEPTION)
-        logger.info(response.json())
 
 
 def get_sms_sender(country_dial_code: str) -> AbstractSMSSender:
