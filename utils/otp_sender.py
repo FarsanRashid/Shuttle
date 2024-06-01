@@ -1,10 +1,13 @@
 from abc import ABC, abstractmethod
+import logging
 import os
 
 import requests
 
 from utils.attributes import BEARER, MESSAGE_SERVER_EXCEPTION
 from utils.config import SIGNUP_OTP_TTL
+
+logger = logging.getLogger(__name__)
 
 
 class InvalidCountryDialCode(Exception):
@@ -42,7 +45,9 @@ class DianaHost(AbstractSMSSender):
         response = requests.post(
             encoded_url, headers=headers, data=str(_data))
         if response.json().get("status") != "success":
+            logger.exception(response.json())
             raise Exception(MESSAGE_SERVER_EXCEPTION)
+        logger.info(response.json())
 
 
 def get_sms_sender(country_dial_code: str) -> AbstractSMSSender:

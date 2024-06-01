@@ -1,4 +1,5 @@
 import json
+import logging
 import random
 from typing import Any
 
@@ -12,6 +13,8 @@ from service_layer.exceptions import InvalidPayload, UserNameNotUnique
 from utils.attributes import USERNAME, error_invalid_payload
 from utils.config import SIGNUP_OTP_TTL
 from utils.otp_sender import get_sms_sender
+
+logger = logging.getLogger(__name__)
 
 
 def validate_payload(username, password, country_dial_code, contact_number):
@@ -48,6 +51,7 @@ def initate_signup(username, password, country_dial_code, contact_number, cache:
             otp_sender = get_sms_sender(pending_otp_validation.country_code)
             otp_sender.send(pending_otp_validation.contact_number, otp)
         except Exception as e:
+            logger.exception(e)
             cache.delete(jwt_token)
             raise e
         return jwt_token

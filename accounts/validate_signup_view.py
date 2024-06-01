@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -14,6 +15,9 @@ from utils.attributes import (
     success_signup_verification,
 )
 from utils.cache_factory import CacheFactory
+
+
+logger = logging.getLogger(__name__)
 
 
 @csrf_exempt
@@ -36,7 +40,8 @@ def validate_signup_view(request):
             return JsonResponse(e.args[0], status=400)
         except VerificationFailed as e:
             return JsonResponse(e.args[0], status=400)
-        except Exception:
+        except Exception as e:
+            logger.exception(e)
             return JsonResponse(error_server_exception, status=500)
     else:
         return JsonResponse(error_invalid_request_method, status=405)

@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
@@ -13,8 +14,11 @@ from utils.attributes import (
     error_invalid_json,
     error_invalid_payload,
     error_invalid_request_method,
+    error_server_exception,
     success_login,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def validate_payload(payload):
@@ -46,5 +50,8 @@ def login_view(request):
             return JsonResponse(e.args[0], status=400)
         except json.JSONDecodeError:
             return JsonResponse(error_invalid_json, status=400)
+        except Exception as e:
+            logger.exception(e)
+            return JsonResponse(error_server_exception, status=500)
     else:
         return JsonResponse(error_invalid_request_method, status=405)

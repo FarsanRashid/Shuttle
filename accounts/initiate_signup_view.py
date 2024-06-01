@@ -52,8 +52,8 @@ def initiate_signup_view(request):
             return JsonResponse(error_username_exists, status=400)
         except json.JSONDecodeError:
             return JsonResponse(error_invalid_json, status=400)
-        except Exception:
-            logger.exception("Error in initiate_signup_view")
+        except Exception as e:
+            logger.exception(e)
             return JsonResponse(error_server_exception, status=500)
     else:
         return JsonResponse(error_invalid_request_method, status=405)
