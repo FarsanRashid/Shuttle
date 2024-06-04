@@ -2,7 +2,6 @@ import json
 import logging
 
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 
 from service_layer import validate_signup
 from service_layer.exceptions import VerificationFailed
@@ -20,7 +19,6 @@ from utils.cache_factory import CacheFactory
 logger = logging.getLogger(__name__)
 
 
-@csrf_exempt
 def validate_signup_view(request):
     if request.method == 'POST':
         try:

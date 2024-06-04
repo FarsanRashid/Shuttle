@@ -3,7 +3,6 @@ import logging
 
 from django.contrib.auth import authenticate, login
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 
 from service_layer.exceptions import InvalidPayload
 from utils.attributes import (
@@ -27,7 +26,6 @@ def validate_payload(payload):
         raise InvalidPayload(error_invalid_payload)
 
 
-@csrf_exempt
 def login_view(request):
     if request.method == 'POST':
         try:

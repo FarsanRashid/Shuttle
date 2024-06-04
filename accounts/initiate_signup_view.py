@@ -2,7 +2,6 @@ import json
 import logging
 
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 
 from service_layer.exceptions import InvalidPayload, UserNameNotUnique
 from service_layer.initiate_signup import initate_signup
@@ -24,7 +23,6 @@ from utils.cache_factory import CacheFactory
 logger = logging.getLogger(__name__)
 
 
-@csrf_exempt
 def initiate_signup_view(request):
     if request.method == 'POST':
         try:
