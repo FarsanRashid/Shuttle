@@ -1,4 +1,5 @@
 import json
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 from django.test import Client, TestCase
@@ -37,7 +38,7 @@ class InitiateSignupTests(TestCase):
     def test_initiate_signup_with_missing_fields(self):
         data = self.data.copy()
         data.pop(USERNAME)
-        response = self.client.post(self.url, json.dumps(
+        response: Any = self.client.post(self.url, json.dumps(
             data), content_type='application/json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), error_invalid_payload)
@@ -67,7 +68,7 @@ class InitiateSignupTests(TestCase):
     def test_initiate_signup_for_existing_username(self, _):
         _ = self.client.post(self.url, json.dumps(
             self.data), content_type='application/json')
-        response = self.client.post(self.url, json.dumps(
+        response: Any = self.client.post(self.url, json.dumps(
             self.data), content_type='application/json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(),  error_username_exists)
@@ -76,7 +77,7 @@ class InitiateSignupTests(TestCase):
         data = self.data.copy()
         # contact number is supposed to be a string
         data[CONTACT_NUMBER] = ' '
-        response = self.client.post(
+        response: Any = self.client.post(
             self.url, data, content_type='application/json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(),  error_invalid_payload)
@@ -90,7 +91,7 @@ class InitiateSignupTests(TestCase):
         self.assertEqual(response.json(),  error_invalid_payload)
 
     def test_invalid_request_method(self):
-        response = self.client.get(self.url)
+        response: Any = self.client.get(self.url)
         self.assertEqual(response.status_code, 405)
         self.assertEqual(response.json(),
                          error_invalid_request_method)

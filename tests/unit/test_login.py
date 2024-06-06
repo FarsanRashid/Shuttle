@@ -1,4 +1,5 @@
 import json
+from typing import Any
 
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
@@ -33,7 +34,7 @@ class LoginTests(TestCase):
         self.login_url = reverse('login')
 
     def test_login_invalid_request_method(self):
-        response = self.client.get(
+        response: Any = self.client.get(
             self.login_url,
             data=self.login_data,
             content_type='application/json'
@@ -45,7 +46,7 @@ class LoginTests(TestCase):
     def test_login_with_invalid_payload(self):
         data = self.login_data.copy()
         data.pop(USERNAME)
-        response = self.client.post(
+        response: Any = self.client.post(
             self.login_url,
             data=json.dumps(data),
             content_type='application/json'
@@ -76,9 +77,9 @@ class LoginTests(TestCase):
         self.assertEqual(response.json(), error_invalid_payload)
 
     def test_login_success(self):
-        response = self.client.post(self.login_url,
-                                    data=json.dumps(self.login_data),
-                                    content_type='application/json')
+        response: Any = self.client.post(self.login_url,
+                                         data=json.dumps(self.login_data),
+                                         content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), success_login)
 
@@ -86,7 +87,7 @@ class LoginTests(TestCase):
 
         self.login_data[PASSWORD] = 'wrongpassword'
 
-        response = self.client.post(
+        response: Any = self.client.post(
             self.login_url,
             data=json.dumps(self.login_data),
             content_type='application/json'
