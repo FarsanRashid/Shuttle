@@ -1,13 +1,14 @@
 import json
 import logging
 
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate
 from django.http import JsonResponse
 
+from accounts.models import TokenStore
 from service_layer.exceptions import InvalidPayload
 from utils.attributes import (
     PASSWORD,
-    SESSION_ID,
+    TOKEN,
     USERNAME,
     error_invalid_credentials,
     error_invalid_json,
@@ -37,9 +38,8 @@ def login_view(request):
             user = authenticate(request, username=username, password=password)
 
             if user is not None:
-                login(request, user)
-                session_id = request.session.session_key
-                success_login[SESSION_ID] = session_id
+                token = TokenStore.objects.create(user=user)
+                success_login[TOKEN] = str(token.key)
                 return JsonResponse(success_login)
             else:
                 return JsonResponse(error_invalid_credentials, status=401)
