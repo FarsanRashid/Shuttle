@@ -68,6 +68,10 @@ class RecommendLocationTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_query_parameter_is_sanitized(self):
+        input = 'Test'
+        response = recommend_location.sanitize(input)
+        self.assertEqual(response, 'test')
+
         input = ' test_with_space '
         response = recommend_location.sanitize(input)
         self.assertEqual(response, 'test_with_space')

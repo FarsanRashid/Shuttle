@@ -1,2 +1,2 @@
 def sanitize(input):
-    return input.strip()
+    return input.strip().lower()
