@@ -5,6 +5,7 @@ from django.test import Client, TestCase
 from django.urls import reverse
 
 from accounts.models import Passenger
+from service_layer import recommend_location
 from utils.attributes import (
     TOKEN,
     error_invalid_request_method,
@@ -65,3 +66,8 @@ class RecommendLocationTests(TestCase):
         response = self.client.get(
             self.url, data={'q': 'test'}, HTTP_AUTHORIZATION=token)
         self.assertEqual(response.status_code, 200)
+
+    def test_query_parameter_is_sanitized(self):
+        input = ' test_with_space '
+        response = recommend_location.sanitize(input)
+        self.assertEqual(response, 'test_with_space')
