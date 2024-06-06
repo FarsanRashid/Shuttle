@@ -1,4 +1,3 @@
-from django.contrib.auth import logout
 from django.http import JsonResponse
 
 from utils.attributes import (
