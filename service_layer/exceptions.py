@@ -8,3 +8,7 @@ class UserNameNotUnique(Exception):
 
 class VerificationFailed(Exception):
     pass
+
+
+class SearchQueryTooShortError(Exception):
+    pass

@@ -6,6 +6,7 @@ from django.urls import reverse
 
 from accounts.models import Passenger
 from service_layer import recommend_location
+from service_layer.exceptions import SearchQueryTooShortError
 from utils.attributes import (
     TOKEN,
     error_invalid_request_method,
@@ -75,3 +76,8 @@ class RecommendLocationTests(TestCase):
         input = ' test_with_space '
         response = recommend_location.sanitize(input)
         self.assertEqual(response, 'test_with_space')
+
+    def test_query_parameter_lenght_is_above_threshold(self):
+        input = 'te'
+        with self.assertRaises(SearchQueryTooShortError):
+            recommend_location.sanitize(input)
