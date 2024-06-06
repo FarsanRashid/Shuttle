@@ -16,7 +16,7 @@ class RecommendLocationTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.url = reverse('recommend_location')
-        self.user = Passenger.objects.create_user(
+        self.user = Passenger.objects.create_user(  # type:ignore
             username='test', password='test')
 
     def test_invalid_request_method(self):

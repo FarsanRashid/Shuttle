@@ -34,7 +34,7 @@ def validate_signup(token: str, otp: str, cache: AbstractCache):
     if pending_otp_validation.OTP != otp:
         raise VerificationFailed(error_incorrect_otp)
 
-    Passenger.objects.create_user(
+    Passenger.objects.create_user(  # type:ignore
         username=pending_otp_validation.username,
         password=pending_otp_validation.password,
         contact_number=pending_otp_validation.contact_number,
