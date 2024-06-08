@@ -5,6 +5,7 @@ from django.test import Client, TestCase
 from django.urls import reverse
 
 from accounts.models import Passenger
+from location.geo_service import geo_service
 from service_layer import recommend_location
 from service_layer.exceptions import SearchQueryTooShortError
 from utils.attributes import (
@@ -81,3 +82,8 @@ class RecommendLocationTests(TestCase):
         input = 'te'
         with self.assertRaises(SearchQueryTooShortError):
             recommend_location.sanitize(input)
+
+    def test_recommended_places_returned(self):
+        location_service = geo_service.FakeGeoService()
+        response = recommend_location.recommend("buet", location_service)
+        self.assertIn("places", response)
