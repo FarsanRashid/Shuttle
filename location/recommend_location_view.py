@@ -7,11 +7,11 @@ from utils.attributes import (
     error_invalid_request_method,
     error_invalid_token,
     error_missing_paramater,
-    error_server_exception,
     error_query_string_too_short,
+    error_server_exception,
     success_location_recommended,
 )
-from utils.location_service_provider import LocationServiceProvider
+from utils.location_service_provider import LocationServiceFactory
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ def recommend_location_view(request):
         if request.user.is_authenticated is False:
             return JsonResponse(error_invalid_token, status=401)
         try:
-            location_service = LocationServiceProvider().get_provider()
+            location_service = LocationServiceFactory().get_service()
             recommendations = recommend_location.recommend(
                 request.GET.get('q'), location_service)
         except recommend_location.SearchQueryTooShortError as e:
@@ -31,6 +31,6 @@ def recommend_location_view(request):
         except Exception as e:
             logger.exception(e)
             return JsonResponse(error_server_exception, status=500)
-        return JsonResponse(recommendations | success_location_recommended, status=200)
+        return JsonResponse({"places": recommendations["places"]} | success_location_recommended, status=200)
     else:
         return JsonResponse(error_invalid_request_method, status=405)
