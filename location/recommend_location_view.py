@@ -11,6 +11,7 @@ from utils.attributes import (
     error_server_exception,
     success_location_recommended,
 )
+from utils.cache_factory import CacheFactory
 from utils.location_service_provider import LocationServiceFactory
 
 logger = logging.getLogger(__name__)
@@ -24,8 +25,9 @@ def recommend_location_view(request):
             return JsonResponse(error_invalid_token, status=401)
         try:
             location_service = LocationServiceFactory().get_service()
+            cache = CacheFactory().get_cache()
             recommendations = recommend_location.recommend(
-                request.GET.get('q'), location_service)
+                request.GET.get('q'), location_service, cache)
         except recommend_location.SearchQueryTooShortError as e:
             return JsonResponse(error_query_string_too_short, status=400)
         except Exception as e:

@@ -14,6 +14,7 @@ from utils.attributes import (
     error_query_string_too_short,
     success_location_recommended,
 )
+from utils.cache_factory import CacheFactory
 
 
 class RecommendLocationTests(TestCase):
@@ -96,3 +97,9 @@ class RecommendLocationTests(TestCase):
                       success_location_recommended["message"])
         self.assertIn(response.json()["status"],
                       success_location_recommended["status"])
+
+    def test_recommendations_are_cached(self):
+        cache = CacheFactory.get_cache()
+        _ = self.client.get(
+            self.url, data={'q': 'polasi'}, HTTP_AUTHORIZATION=self.token)
+        self.assertIsNotNone(cache.get('polasi'))
