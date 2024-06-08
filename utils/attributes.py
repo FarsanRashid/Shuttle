@@ -20,6 +20,8 @@ CODE_INVALID_CREDENTIALS = "invalid_credentials"
 CODE_INVALID_PAYLOAD = "invalid_payload"
 CODE_MISSING_PARAMATER = "missing_paramater"
 CODE_INVALID_TOKEN = "invalid_token"
+CODE_LOCATION_RECOMMENDED = "location_recommended"
+CODE_QUERY_STRING_TOO_SHORT = "query_string_too_short"
 
 
 MESSAGE_NON_UNIQUE_USER = "username already exists"
@@ -35,6 +37,8 @@ MESSAGE_INVALID_CREDENTIALS = "username/password is incorrect"
 MESSAGE_INVALID_PAYLOAD = "payload validation failed"
 MESSAGE_MISSING_PARAMATER = "required query parameter is missing"
 MESSAGE_INVALID_TOKEN = "token validation failed"
+MESSAGE_LOCATION_RECOMMENDATION = "location recommended successfully"
+MESSAGE_QUERY_STRING_TOO_SHORT = "query string length is shorter than required length"
 
 
 error_username_exists = Response(FAILURE,
@@ -73,6 +77,12 @@ error_missing_paramater = Response(
 
 error_invalid_token = Response(
     FAILURE, CODE_INVALID_TOKEN, MESSAGE_INVALID_TOKEN)._asdict()
+
+success_location_recommended = Response(
+    SUCCESS, CODE_LOCATION_RECOMMENDED, MESSAGE_LOCATION_RECOMMENDATION)._asdict()
+
+error_query_string_too_short = Response(
+    FAILURE, CODE_QUERY_STRING_TOO_SHORT, MESSAGE_QUERY_STRING_TOO_SHORT)._asdict()
 
 
 TOKEN = "token"

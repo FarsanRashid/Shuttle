@@ -5,14 +5,14 @@ from django.test import Client, TestCase
 from django.urls import reverse
 
 from accounts.models import Passenger
-from location.geo_service import geo_service
 from service_layer import recommend_location
-from service_layer.exceptions import SearchQueryTooShortError
 from utils.attributes import (
     TOKEN,
     error_invalid_request_method,
     error_invalid_token,
     error_missing_paramater,
+    error_query_string_too_short,
+    success_location_recommended,
 )
 
 
@@ -82,11 +82,39 @@ class RecommendLocationTests(TestCase):
         self.assertEqual(response, 'test_with_space')
 
     def test_query_parameter_lenght_is_above_threshold(self):
-        input = 'te'
-        with self.assertRaises(SearchQueryTooShortError):
-            recommend_location.sanitize(input)
+        seed_location = 'te'
+        login_response: Any = self.client.post(
+            reverse('login'),
+            data=json.dumps(
+                {'username': 'test', 'password': 'test'}),
+            content_type='application/json')
+
+        token = login_response.json()[TOKEN]
+
+        response = self.client.get(
+            self.url, data={'q': seed_location}, HTTP_AUTHORIZATION=token)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json(), error_query_string_too_short)
 
     def test_recommended_places_returned(self):
-        location_service = geo_service.FakeGeoService()
-        response = recommend_location.recommend("buet", location_service)
-        self.assertIn("places", response)
+        login_response: Any = self.client.post(
+            reverse('login'),
+            data=json.dumps(
+                {'username': 'test', 'password': 'test'}),
+            content_type='application/json')
+
+        token = login_response.json()[TOKEN]
+
+        response = self.client.get(
+            self.url, data={'q': 'test'}, HTTP_AUTHORIZATION=token)
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertIn("places", response.json())
+
+        self.assertIn(response.json()["code"],
+                      success_location_recommended["code"])
+        self.assertIn(response.json()["message"],
+                      success_location_recommended["message"])
+        self.assertIn(response.json()["status"],
+                      success_location_recommended["status"])
