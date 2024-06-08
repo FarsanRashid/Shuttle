@@ -19,6 +19,7 @@ CODE_LOGIN_SUCCESS = "login_success"
 CODE_INVALID_CREDENTIALS = "invalid_credentials"
 CODE_INVALID_PAYLOAD = "invalid_payload"
 CODE_MISSING_PARAMATER = "missing_paramater"
+CODE_INVALID_TOKEN = "invalid_token"
 
 
 MESSAGE_NON_UNIQUE_USER = "username already exists"
@@ -33,6 +34,7 @@ MESSAGE_LOGIN_SUCCESS = "login successful"
 MESSAGE_INVALID_CREDENTIALS = "username/password is incorrect"
 MESSAGE_INVALID_PAYLOAD = "payload validation failed"
 MESSAGE_MISSING_PARAMATER = "required query parameter is missing"
+MESSAGE_INVALID_TOKEN = "token validation failed"
 
 
 error_username_exists = Response(FAILURE,
@@ -68,6 +70,9 @@ error_invalid_credentials = Response(
 
 error_missing_paramater = Response(
     FAILURE, CODE_MISSING_PARAMATER, MESSAGE_MISSING_PARAMATER)._asdict()
+
+error_invalid_token = Response(
+    FAILURE, CODE_INVALID_TOKEN, MESSAGE_INVALID_TOKEN)._asdict()
 
 
 TOKEN = "token"

@@ -11,6 +11,7 @@ from service_layer.exceptions import SearchQueryTooShortError
 from utils.attributes import (
     TOKEN,
     error_invalid_request_method,
+    error_invalid_token,
     error_missing_paramater,
 )
 
@@ -53,10 +54,12 @@ class RecommendLocationTests(TestCase):
     def test_token_authentication(self):
         response: Any = self.client.get(self.url, data={'q': 'test'})
         self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.json(), error_invalid_token)
 
         response = self.client.get(self.url, data={'q': 'test'},
                                    HTTP_AUTHORIZATION='invalid_token')
         self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.json(), error_invalid_token)
 
         login_response: Any = self.client.post(
             reverse('login'),
