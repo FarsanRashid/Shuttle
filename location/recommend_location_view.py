@@ -31,6 +31,6 @@ def recommend_location_view(request):
         except Exception as e:
             logger.exception(e)
             return JsonResponse(error_server_exception, status=500)
-        return JsonResponse({"places": recommendations["places"]} | success_location_recommended, status=200)
+        return JsonResponse({"places": recommendations} | success_location_recommended, status=200)
     else:
         return JsonResponse(error_invalid_request_method, status=405)

@@ -1,8 +1,11 @@
-import os
 from abc import ABC, abstractmethod
-from typing import Dict
+import logging
+import os
+from typing import Dict, List
 
 import requests
+
+logger = logging.getLogger(__name__)
 
 
 class GeoService(ABC):
@@ -10,7 +13,7 @@ class GeoService(ABC):
         pass
 
     @abstractmethod
-    def recommend(self, seed_location) -> Dict:
+    def recommend(self, seed_location) -> List:
         pass
 
 
@@ -18,7 +21,7 @@ class BariKoi(GeoService):
     def __init__(self):
         pass
 
-    def recommend(self, seed_location):
+    def recommend(self, seed_location) -> List:
         response = requests.get(
             "https://barikoi.xyz/v2/api/search/autocomplete/place",
             params={'q': seed_location,
@@ -27,12 +30,15 @@ class BariKoi(GeoService):
                     },
             timeout=5
         )
-        return response.json()
+        if response.json()["status"] != 200:
+            logger.exception(response.json())
+            raise Exception
+        return response.json()["places"]
 
 
 class FakeGeoService(GeoService):
     def __init__(self):
         pass
 
-    def recommend(self, seed_location) -> Dict:
-        return {"places": []}
+    def recommend(self, seed_location) -> List:
+        return []

@@ -9,4 +9,4 @@ class RecommendLocationTests(TestCase):
         provider = LocationServiceFactory().get_service()
         response = recommend_location.recommend("buet", provider)
         logging.info(response)
-        self.assertIn("places", response)
+        self.assertIsInstance(response, list)
