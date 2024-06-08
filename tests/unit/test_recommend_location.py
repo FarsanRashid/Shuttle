@@ -23,6 +23,14 @@ class RecommendLocationTests(TestCase):
         self.user = Passenger.objects.create_user(  # type:ignore
             username='test', password='test')
 
+        login_response: Any = self.client.post(
+            reverse('login'),
+            data=json.dumps(
+                {'username': 'test', 'password': 'test'}),
+            content_type='application/json')
+
+        self.token = login_response.json()[TOKEN]
+
     def test_invalid_request_method(self):
         response: Any = self.client.post(self.url)
         self.assertEqual(response.status_code, 405)
@@ -30,25 +38,18 @@ class RecommendLocationTests(TestCase):
                          error_invalid_request_method)
 
     def test_required_query_parameter_is_provided(self):
-        login_response: Any = self.client.post(
-            reverse('login'),
-            data=json.dumps(
-                {'username': 'test', 'password': 'test'}),
-            content_type='application/json')
-
-        token = login_response.json()[TOKEN]
-
-        response: Any = self.client.get(self.url, HTTP_AUTHORIZATION=token)
+        response: Any = self.client.get(
+            self.url, HTTP_AUTHORIZATION=self.token)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), error_missing_paramater)
 
         response = self.client.get(
-            self.url, data={'Q': 'test'}, HTTP_AUTHORIZATION=token)
+            self.url, data={'Q': 'test'}, HTTP_AUTHORIZATION=self.token)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), error_missing_paramater)
 
         response = self.client.get(
-            self.url, data={'q': 'test'},  HTTP_AUTHORIZATION=token)
+            self.url, data={'q': 'test'},  HTTP_AUTHORIZATION=self.token)
         self.assertEqual(response.status_code, 200)
 
     def test_token_authentication(self):
@@ -61,15 +62,8 @@ class RecommendLocationTests(TestCase):
         self.assertEqual(response.status_code, 401)
         self.assertEqual(response.json(), error_invalid_token)
 
-        login_response: Any = self.client.post(
-            reverse('login'),
-            data=json.dumps(
-                {'username': 'test', 'password': 'test'}),
-            content_type='application/json')
-
-        token = login_response.json()[TOKEN]
         response = self.client.get(
-            self.url, data={'q': 'test'}, HTTP_AUTHORIZATION=token)
+            self.url, data={'q': 'test'}, HTTP_AUTHORIZATION=self.token)
         self.assertEqual(response.status_code, 200)
 
     def test_query_parameter_is_sanitized(self):
@@ -83,30 +77,14 @@ class RecommendLocationTests(TestCase):
 
     def test_query_parameter_lenght_is_above_threshold(self):
         seed_location = 'te'
-        login_response: Any = self.client.post(
-            reverse('login'),
-            data=json.dumps(
-                {'username': 'test', 'password': 'test'}),
-            content_type='application/json')
-
-        token = login_response.json()[TOKEN]
-
         response = self.client.get(
-            self.url, data={'q': seed_location}, HTTP_AUTHORIZATION=token)
+            self.url, data={'q': seed_location}, HTTP_AUTHORIZATION=self.token)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), error_query_string_too_short)
 
     def test_recommended_places_returned(self):
-        login_response: Any = self.client.post(
-            reverse('login'),
-            data=json.dumps(
-                {'username': 'test', 'password': 'test'}),
-            content_type='application/json')
-
-        token = login_response.json()[TOKEN]
-
         response = self.client.get(
-            self.url, data={'q': 'test'}, HTTP_AUTHORIZATION=token)
+            self.url, data={'q': 'test'}, HTTP_AUTHORIZATION=self.token)
 
         self.assertEqual(response.status_code, 200)
 
