@@ -50,7 +50,7 @@ class RecommendLocationTests(TestCase):
             self.url, data={'q': 'test'},  HTTP_AUTHORIZATION=token)
         self.assertEqual(response.status_code, 200)
 
-    def test_auth_token_is_provided(self):
+    def test_token_authentication(self):
         response: Any = self.client.get(self.url, data={'q': 'test'})
         self.assertEqual(response.status_code, 401)
 
