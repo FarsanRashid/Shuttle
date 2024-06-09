@@ -107,7 +107,7 @@ class RecommendLocationTests(TestCase):
         self.assertIsNotNone(self.cache.get('polasi'))
 
     def test_cached_recommendations_returned(self):
-        self.cache.set('polasi', 'cached_value')
+        self.cache.set('polasi', json.dumps('cached_value'))
         geo_service = GeoServiceFactory().get_service()
         response = recommend_location.recommend(
             'polasi', geo_service, self.cache)
