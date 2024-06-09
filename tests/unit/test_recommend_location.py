@@ -32,6 +32,8 @@ class RecommendLocationTests(TestCase):
             content_type='application/json')
 
         self.token = login_response.json()[TOKEN]
+        self.cache = CacheFactory.get_cache()
+        self.cache.delete_all_key()
 
     def test_invalid_request_method(self):
         response: Any = self.client.post(self.url)
@@ -100,15 +102,13 @@ class RecommendLocationTests(TestCase):
                       success_location_recommended["status"])
 
     def test_recommendations_are_cached(self):
-        cache = CacheFactory.get_cache()
         _ = self.client.get(
             self.url, data={'q': 'polasi'}, HTTP_AUTHORIZATION=self.token)
-        self.assertIsNotNone(cache.get('polasi'))
+        self.assertIsNotNone(self.cache.get('polasi'))
 
     def test_cached_recommendations_returned(self):
-        cache = CacheFactory.get_cache()
-        cache.set('polasi', 'cached_value')
+        self.cache.set('polasi', 'cached_value')
         geo_service = GeoServiceFactory().get_service()
         response = recommend_location.recommend(
-            'polasi', geo_service, cache)
+            'polasi', geo_service, self.cache)
         self.assertEqual(response, 'cached_value')
