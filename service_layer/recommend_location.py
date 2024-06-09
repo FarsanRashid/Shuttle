@@ -1,3 +1,4 @@
+import json
 from adapters.cache import AbstractCache
 from adapters.geo_services import GeoService
 from service_layer.exceptions import SearchQueryTooShortError
@@ -15,5 +16,5 @@ def recommend(seed_location, geo_service: GeoService, cache: AbstractCache):
     if cache.get(seed_location) is not None:
         return cache.get(seed_location)
     recommendations = geo_service.recommend(seed_location)
-    cache.set(seed_location, recommendations)
+    cache.set(seed_location, json.dumps(recommendations))
     return recommendations
