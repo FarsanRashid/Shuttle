@@ -1,6 +1,6 @@
 import os
 
-from location.geo_service.geo_service import BariKoi, FakeGeoService, GeoService
+from adapters.geo_services import BariKoi, FakeGeoService, GeoService
 
 
 class LocationServiceFactory:

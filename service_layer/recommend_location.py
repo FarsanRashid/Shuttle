@@ -1,5 +1,5 @@
 from adapters.cache import AbstractCache
-from location.geo_service.geo_service import GeoService
+from adapters.geo_services import GeoService
 from service_layer.exceptions import SearchQueryTooShortError
 
 
