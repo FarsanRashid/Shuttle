@@ -15,6 +15,7 @@ from utils.attributes import (
     success_location_recommended,
 )
 from utils.cache_factory import CacheFactory
+from utils.location_service_provider import LocationServiceFactory
 
 
 class RecommendLocationTests(TestCase):
@@ -103,3 +104,11 @@ class RecommendLocationTests(TestCase):
         _ = self.client.get(
             self.url, data={'q': 'polasi'}, HTTP_AUTHORIZATION=self.token)
         self.assertIsNotNone(cache.get('polasi'))
+
+    def test_cached_recommendations_returned(self):
+        cache = CacheFactory.get_cache()
+        cache.set('polasi', 'cached_value')
+        location_service = LocationServiceFactory().get_service()
+        response = recommend_location.recommend(
+            'polasi', location_service, cache)
+        self.assertEqual(response, 'cached_value')
