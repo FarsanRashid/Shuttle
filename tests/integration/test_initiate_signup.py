@@ -6,7 +6,6 @@ from django.test.client import Client
 from django.urls import reverse
 import jwt
 
-from adapters.cache import RedisCache
 from utils.attributes import (
     CONTACT_NUMBER,
     COUNTRY_DIAL_CODE,
@@ -14,13 +13,14 @@ from utils.attributes import (
     USERNAME,
     success_signup_initiate,
 )
+from utils.cache_factory import CacheFactory
 
 
 class InitiateSignupTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.url = reverse('initiate_signup')
-        self.cache = RedisCache()
+        self.cache = CacheFactory.get_cache()
         self.data = {
             USERNAME: 'farsan',
             PASSWORD: 'testpassword',

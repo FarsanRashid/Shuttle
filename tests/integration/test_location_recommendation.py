@@ -8,6 +8,8 @@ from utils.geo_service_factory import GeoServiceFactory
 class RecommendLocationTests(TestCase):
     def setUp(self):
         self.cache = CacheFactory().get_cache()
+
+    def tearDown(self) -> None:
         self.cache.delete_all_key()
 
     def test_recommended_location_is_returned(self):
