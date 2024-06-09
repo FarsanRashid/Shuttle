@@ -12,7 +12,7 @@ from utils.attributes import (
     success_location_recommended,
 )
 from utils.cache_factory import CacheFactory
-from utils.location_service_provider import LocationServiceFactory
+from utils.location_service_factory import LocationServiceFactory
 
 logger = logging.getLogger(__name__)
 
