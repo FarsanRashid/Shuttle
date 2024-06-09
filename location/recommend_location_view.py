@@ -12,7 +12,7 @@ from utils.attributes import (
     success_location_recommended,
 )
 from utils.cache_factory import CacheFactory
-from utils.location_service_factory import LocationServiceFactory
+from utils.geo_service_factory import GeoServiceFactory
 
 logger = logging.getLogger(__name__)
 
@@ -24,10 +24,10 @@ def recommend_location_view(request):
         if request.user.is_authenticated is False:
             return JsonResponse(error_invalid_token, status=401)
         try:
-            location_service = LocationServiceFactory().get_service()
+            geo_service = GeoServiceFactory().get_service()
             cache = CacheFactory().get_cache()
             recommendations = recommend_location.recommend(
-                request.GET.get('q'), location_service, cache)
+                request.GET.get('q'), geo_service, cache)
         except recommend_location.SearchQueryTooShortError as e:
             return JsonResponse(error_query_string_too_short, status=400)
         except Exception as e:

@@ -3,7 +3,7 @@ import os
 from adapters.geo_services import BariKoi, FakeGeoService, GeoService
 
 
-class LocationServiceFactory:
+class GeoServiceFactory:
     _fake_service = None
     _bari_koi = None
     _is_unit_test_running = os.environ.get("UNIT_TEST_RUNNING", False)
