@@ -43,25 +43,25 @@ class RedisCache(AbstractCache):
         self.__con = redis.Redis(
             host=host, port=port, decode_responses=True)
 
-    def get(self, key):
+    def get(self, key) -> Any:
         return self.__con.get(key)
 
-    def set(self, key, value):
+    def set(self, key, value) -> Any:
         return self.__con.set(key, value)
 
-    def set_if_not_exists(self, key, value):
+    def set_if_not_exists(self, key, value) -> Any:
         return self.__con.set(key, value, nx=True)
 
-    def set_with_TTL(self, key, value, ttl):
+    def set_with_TTL(self, key, value, ttl) -> Any:
         return self.__con.set(key,  value, ex=ttl)
 
-    def set_with_TTL_if_not_exists(self, key, value, ttl):
+    def set_with_TTL_if_not_exists(self, key, value, ttl) -> Any:
         return self.__con.set(key, value,  nx=True, ex=ttl)
 
-    def delete(self, key):
+    def delete(self, key) -> Any:
         return self.__con.delete(key)
 
-    def delete_all_key(self):
+    def delete_all_key(self) -> Any:
         return self.__con.flushdb()
 
 
